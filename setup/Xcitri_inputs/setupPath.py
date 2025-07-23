@@ -27,7 +27,7 @@ SCHEME_NO = 8
 ODCLS = "1,2,5,10"
 
 # CHANGE full path to store the reference files (typically have the App name as the last part of the path)
-REF_FILES = os.path.join(BASE_DIR, 'tmp_files', 'Xmal')
+REF_FILES = os.path.join(BASE_DIR, 'tmp_files', 'Xcitri')
 
 # CHANGE username for the database
 DB_USER='mgt'

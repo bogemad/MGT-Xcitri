@@ -53,6 +53,25 @@ export odcls="$(python -c "from $SETTINGS import ODCLS; print(ODCLS)")"
 export superusername="$(python -c "from $SETTINGS import SUPERUSERNAME; print(SUPERUSERNAME)")"
 export superuseremail=""$(python -c "from $SETTINGS import SUPERUSEREMAIL; print(SUPERUSEREMAIL)")""
 
+echo "db_name = $db_name"
+echo "appname = $appname"
+echo "dbuser = $dbuser"
+echo "species = $species"
+echo "ref_files = $ref_files"
+echo "ref_genome = $ref_genome"
+echo "lociloc = $lociloc"
+echo "scheme_accessions = $scheme_accessions"
+echo "path_mgt = $path_mgt"
+echo "settingfile = $settingfile"
+echo "settings_prefix = $settings_prefix"
+echo "refalleles = $refalleles"
+echo "condaenv = $condaenv"
+echo "schemeno = $schemeno"
+echo "odcls = $odcls"
+echo "superusername = $superusername"
+echo "superuseremail = $superuseremail"
+
+exit
 ################################# EDIT ABOVE THIS LINE ONLY  ###############################################################
 
 os=$(uname -s)

@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
-SECRET_KEY = '' # CHANGE to new secret key 
+SECRET_KEY = 'hhgfytrtfgfytrytfhfy' # CHANGE to new secret key 
 
 DEBUG = True
 
@@ -31,7 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '0.0.0.0', '[::1]', '*']
 
 INSTALLED_APPS = [
-    'Clawclip', # CHANGE add new databases to this list. 
+    'Xcitri', # CHANGE add new databases to this list. 
     'django_tables2',
     'Home',
     'MGTdb_shared',
@@ -95,16 +95,16 @@ FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o774
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 # 2018, Jan 9 - require a db router (if multiple databases)
-NCBI_RETRIEVAL_FREQUENCY = {'Clawclip': None} # CHANGE to frequency of retrieval
+NCBI_RETRIEVAL_FREQUENCY = {'Xcitri': None} # CHANGE to frequency of retrieval
 
 DATABASE_ROUTERS = ['Mgt.router.GenericRouter']
-APPS_DATABASE_MAPPING = {'Clawclip':'clawclip' } #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
+APPS_DATABASE_MAPPING = {'Xcitri':'xcitri' } #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
 
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": 'blankuser', 
-        "PASSWORD": 'blankpassword',
+        "USER": 'mgt', 
+        "PASSWORD": 'MGTmgt!!!1',
         "HOST": "0.0.0.0",
         "PORT": "5432",
         'NAME': 'default',
@@ -119,13 +119,13 @@ DATABASES = {
     # #     'NAME': 'blankdb',#CHANGE to new database name
     # # },
     ## Clawclip example 
-    'clawclip': {
+    'xcitri': {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": 'blankuser',
-        "PASSWORD": 'blankpassword',
+        "USER": 'mgt',
+        "PASSWORD": 'MGTmgt!!!1',
         "HOST": "0.0.0.0",
         "PORT": "5432",
-        'NAME': 'clawclip',
+        'NAME': 'xcitri',
     },
 }
 
@@ -164,25 +164,26 @@ LOGIN_REDIRECT_URL = '/'
 
 #RELATIVE PATHS FROM folder containing manage.py in this repo to folder on your system
 # NOTE: Please move the data folders to a secure location once setup is complete.  
-SUBDIR_REFERENCES = '.data/References/' 
-SUBDIR_ALLELES = '.data/Alleles/' 
-MEDIA_ROOT = '.data/Uploads/'
-BLASTALLELES='.data/species_specific_alleles/'
+SUBDIR_REFERENCES = '../../References/' 
+SUBDIR_ALLELES = '../../MGT-Xcitri/Alleles/' 
+MEDIA_ROOT = '../../MGT-Xcitri/Uploads/'
+BLASTALLELES='../../MGT-Xcitri/species_specific_alleles/'
 
 # ABSOLUTE PATH VERSIONS OF ABOVE
-ABS_SUBDIR_REFERENCES = 'data/References/'
-ABS_SUBDIR_ALLELES = 'data/Alleles/' 
-ABS_MEDIA_ROOT = "data/Uploads/" 
-ABS_BLASTALLELES='data/species_specific_alleles/'
+ABS_SUBDIR_REFERENCES = os.path.join(BASE_DIR, 'References')
+ABS_SUBDIR_ALLELES = os.path.join(BASE_DIR, 'Alleles')
+ABS_MEDIA_ROOT = os.path.join(BASE_DIR, 'Uploads') 
+ABS_BLASTALLELES= os.path.join(BASE_DIR, 'species_specific_alleles')
 
-FILES_FOR_DOWNLOAD = "data/files_for_download/"
-TMPFOLDER = "data/tmp_files/"
+FILES_FOR_DOWNLOAD = os.path.join(BASE_DIR, 'files_for_download')
+TMPFOLDER = os.path.join(BASE_DIR, 'tmp_files')
+
 
 
 
 ASCPKEY = "/Path/to/.aspera/connect/etc/asperaweb_id_dsa.openssh"#CHANGE ONLY NEEDED IF RUNNING cron_pipeline --dl_reads
 
-KRAKEN_DEFAULT_DB='/Path/to/folder/minikraken_20171013_4GB/'#CHANGE ONLY NEEDED IF RUNNING cron_pipeline --reads_to_alleles
+KRAKEN_DEFAULT_DB='/home/mgt/minikraken_20171019_8GB/'#CHANGE ONLY NEEDED IF RUNNING cron_pipeline --reads_to_alleles
 
 ### NOT NEEDED ON LOCAL DB ###
 KATANA_LOCATION=''
@@ -195,19 +196,19 @@ if DEBUG:
     mimetypes.add_type("application/javascript", ".js", True)
 
 #CHANGE BELOW TO list species specific cutoffs/values
-SPECIES_SEROVAR = {'Blankdb': {"species":'Blank species',
+SPECIES_SEROVAR = {'Xcitri': {"species":'Xanthomonas citri',
                                   "serovar":'',
                                   "min_largest_contig":60000,
                                   "max_contig_no":700,
                                   "n50_min":20000,
                                   "genome_min":4500000,
-                                  "genome_max":5500000,
-                                  "hspident":0.96,
+                                  "genome_max":6000000,
+                                  "hspident":0.90,
                                   "locusnlimit":0.8,
                                   "snpwindow":40,
-                                  "densitylim":4,
+                                  "densitylim":16,
                                   "refsize":5.0,
-                                  "blastident":90,
+                                  "blastident":85,
                                   "apzero":0.04
                                   }
                    }
@@ -233,4 +234,4 @@ DATE_FORMAT = 'Y-m-d'
 STATIC_URL = '/static/'
 STATIC_ROOT = 'Static/'
 
-RAWQUERIES_DISPLAY = {'Clawclip': '', } # CHANGE for extra queries in database but keep string empty if using default (i.e, 'Salmonella': '')
+RAWQUERIES_DISPLAY = {'Xcitri': '', } # CHANGE for extra queries in database but keep string empty if using default (i.e, 'Salmonella': '')

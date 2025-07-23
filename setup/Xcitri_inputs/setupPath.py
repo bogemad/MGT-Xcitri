@@ -18,7 +18,7 @@ REF_GENOME = os.path.join(BASE_DIR, 'setup', 'Xcitri_inputs', 'NCBI_MSCT1_Xcmal_
 LOCI_LOC = os.path.join(BASE_DIR, 'setup', 'Xcitri_inputs', 'lociLocations_MSCT.txt')
 
 # CHANGE full path to folder of schemes 
-SCHEME_ACCESSIONS = os.path.join(BASE_DIR, 'setup', 'Xcitri_inputs', 'Schemes')
+SCHEME_ACCESSIONS = os.path.join(BASE_DIR, 'setup', 'Xcitri_inputs', 'Schemes/')
 
 # CHANGE number of schemes 
 SCHEME_NO = 8
@@ -27,7 +27,7 @@ SCHEME_NO = 8
 ODCLS = "1,2,5,10"
 
 # CHANGE full path to store the reference files (typically have the App name as the last part of the path)
-REF_FILES = os.path.join(BASE_DIR, 'tmp_files', 'Xcitri')
+REF_FILES = os.path.join(BASE_DIR, 'tmp_files', 'Xcitri/')
 
 # CHANGE username for the database
 DB_USER='mgt'
@@ -42,7 +42,7 @@ PATH_MGT= BASE_DIR
 SETTINGS_PREFIX="Mgt.settings_template"
 
 # CHANGE full path of where you want to store species specific alleles that are generated. 
-REFALLELES=os.path.join(BASE_DIR, 'species_specific_alleles')
+REFALLELES=os.path.join(BASE_DIR, 'species_specific_alleles/')
 
 # CHANGE name of the conda environment.
 CONDAENV="mgtenv"

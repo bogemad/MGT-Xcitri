@@ -71,7 +71,6 @@ echo "odcls = $odcls"
 echo "superusername = $superusername"
 echo "superuseremail = $superuseremail"
 
-exit
 ################################# EDIT ABOVE THIS LINE ONLY  ###############################################################
 
 os=$(uname -s)

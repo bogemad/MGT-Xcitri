@@ -103,7 +103,7 @@ cd Mgt/Mgt
 mgt_home=$(pwd)'/'
 
 cp -r Blankdb ${appname}
-
+sleep 2
 # Replace 'Blankdb' with '$appname' in apps.py
 
 if [ "$os" = "Darwin" ]; then
@@ -179,7 +179,7 @@ sleep 1
 ## ??? sed -i -e 's/#replace //g' ../$appname""/views/FuncsAuxAndDb/mgt9Aps.py
 
 echo alleles
-mkdir $mgt_home'Alleles/'
+mkdir -p $mgt_home'Alleles/'
 # cd $mgt_home"Scripts"
 python Scripts/addAlleles.py ./ Mgt $appname $ref_files"/"$appname"_alleles/" $settings_prefix;
 python Scripts/addSnps.py ./ Mgt $appname $ref_files"/snpMuts.txt" $settings_prefix
@@ -239,7 +239,7 @@ mv Scripts/autoGenViews.py $appname"/models/"
 
 sleep 2
 rm Scripts/views_head
-psql -U ${dbuser} -d ${db_name} -f ./runOnDb.sql
+PGPASSWORD=$DB_PASSWORD psql -U ${dbuser} -d ${db_name} -f ./runOnDb.sql
 
 
 #cd ../

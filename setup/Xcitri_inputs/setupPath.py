@@ -2,8 +2,6 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# CHANGE Database name 
-DB_NAME='xcitri'
 
 # CHANGE App name (usually the database name with a captial letter)
 APPNAME='Xcitri'
@@ -29,9 +27,6 @@ ODCLS = "1,2,5,10"
 # CHANGE full path to store the reference files (typically have the App name as the last part of the path)
 REF_FILES = os.path.join(BASE_DIR, 'tmp_files', 'Xcitri/')
 
-# CHANGE username for the database
-DB_USER='mgt'
-
 # CHANGE full path of the settings_template
 SETTING_FILE=os.path.join(BASE_DIR, 'Mgt', 'Mgt', 'Mgt', 'settings_template.py')
 
@@ -43,9 +38,6 @@ SETTINGS_PREFIX="Mgt.settings_template"
 
 # CHANGE full path of where you want to store species specific alleles that are generated. 
 REFALLELES=os.path.join(BASE_DIR, 'species_specific_alleles/')
-
-# CHANGE name of the conda environment.
-CONDAENV="mgtenv"
 
 # CHANGE superusername of the django application 
 SUPERUSERNAME="ref"

@@ -3,16 +3,31 @@
 #CHANGE below to select where conda is initialised on your system
 # source ~/.bash_profile
 # source ~/.zshrc
+SETTINGS="$1"
 source ~/.bashrc
+eval "$(conda shell.bash hook)"
 
+# . ../miniconda3/etc/profile.d/conda.sh
+export condaenv=mgtenv
+
+conda activate ${condaenv};
+
+#CHANGE full path to top folder of MGT repo
+export path_mgt="$(python -c "from $SETTINGS import PATH_MGT; print(PATH_MGT)")"
+
+source $path_mgt/.env
 # cd ../Mgt/Mgt/
 
-SETTINGS="$1"
+export DB_NAME
+export DB_USER
+export DB_PASSWORD
+export DB_HOST
+export DB_PORT
 
 # #CHANGE species name to be used for database, should match kraken result for contamination checking
-export db_name="$(python -c "from $SETTINGS import DB_NAME; print(DB_NAME)")"
+export db_name="$DB_NAME"
 export appname="$(python -c "from $SETTINGS import APPNAME; print(APPNAME)")"
-export dbuser="$(python -c "from $SETTINGS import DB_USER; print(DB_USER)")"
+export dbuser="$DB_USER"
 
 #CHANGE species name to be used for database, should match kraken result for contamination checking
 export species="$(python -c "from $SETTINGS import SPECIES; print(SPECIES)")"
@@ -29,8 +44,6 @@ export lociloc="$(python -c "from $SETTINGS import LOCI_LOC; print(LOCI_LOC)")"
 #CHANGE full path to lociLocationsInRef file
 export scheme_accessions="$(python -c "from $SETTINGS import SCHEME_ACCESSIONS; print(SCHEME_ACCESSIONS)")"
 
-#CHANGE full path to top folder of MGT repo
-export path_mgt="$(python -c "from $SETTINGS import PATH_MGT; print(PATH_MGT)")"
 
 export settingfile="$(python -c "from $SETTINGS import SETTING_FILE; print(SETTING_FILE)")"
 
@@ -39,9 +52,6 @@ export settings_prefix="$(python -c "from $SETTINGS import SETTINGS_PREFIX; prin
 
 #CHANGE location to store single file of reference alleles
 export refalleles="$(python -c "from $SETTINGS import REFALLELES; print(REFALLELES)")"
-
-#CHANGE name of conda environment
-export condaenv="$(python -c "from $SETTINGS import CONDAENV; print(CONDAENV)")"
 
 #CHANGE number of levels in MGT scheme
 export schemeno="$(python -c "from $SETTINGS import SCHEME_NO; print(SCHEME_NO)")"
@@ -73,24 +83,20 @@ echo "superuseremail = $superuseremail"
 
 ################################# EDIT ABOVE THIS LINE ONLY  ###############################################################
 
+
 os=$(uname -s)
 
-echo $db_name
-echo ${db_name}
 echo "creating database"
-dropdb -U ${dbuser} ${db_name}
-createdb -U ${dbuser} ${db_name}
-psql -U ${dbuser} -d ${db_name} -c "grant all privileges on database ${db_name} to mlstwebsite"
-psql -U ${dbuser} -d ${db_name} -c "grant all privileges on database ${db_name} to ${dbuser}"
+
+PGPASSWORD=$DB_PASSWORD dropdb -U ${dbuser} ${db_name} || echo "No db named ${db_name} to drop"
+PGPASSWORD=$DB_PASSWORD createdb -U ${dbuser} ${db_name}
+PGPASSWORD=$DB_PASSWORD psql -U ${dbuser} -d ${db_name} -c "grant all privileges on database ${db_name} to mlstwebsite"
+PGPASSWORD=$DB_PASSWORD psql -U ${dbuser} -d ${db_name} -c "grant all privileges on database ${db_name} to ${dbuser}"
 sleep 2
 
 cd ${path_mgt}
 
-eval "$(conda shell.bash hook)"
 
-# . ../miniconda3/etc/profile.d/conda.sh
-
-conda activate ${condaenv};
 
 cd Mgt/Mgt
 

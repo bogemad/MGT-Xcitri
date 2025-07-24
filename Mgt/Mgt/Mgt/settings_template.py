@@ -12,6 +12,14 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import sys
+from django.core.exceptions import ImproperlyConfigured
+
+def get_env(var_name):
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        raise ImproperlyConfigured(f"Missing required env var `{var_name}`")
+    
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -98,15 +106,15 @@ FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o774
 NCBI_RETRIEVAL_FREQUENCY = {'Xcitri': None} # CHANGE to frequency of retrieval
 
 DATABASE_ROUTERS = ['Mgt.router.GenericRouter']
-APPS_DATABASE_MAPPING = {'Xcitri':'xcitri' } #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
+APPS_DATABASE_MAPPING = {'Xcitri':get_env("DB_NAME") } #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
 
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": 'mgt', 
-        "PASSWORD": 'MGTmgt!!!1',
-        "HOST": "0.0.0.0",
-        "PORT": "5432",
+        "USER": get_env("DB_USER"), 
+        "PASSWORD": get_env("DB_PASSWORD"), 
+        "HOST": get_env("DB_HOST"), 
+        "PORT": get_env("DB_PORT"), 
         'NAME': 'default',
     },
     ## Database configuration example 
@@ -119,13 +127,13 @@ DATABASES = {
     # #     'NAME': 'blankdb',#CHANGE to new database name
     # # },
     ## Clawclip example 
-    'xcitri': {
+    get_env("DB_NAME"): {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": 'mgt',
-        "PASSWORD": 'MGTmgt!!!1',
-        "HOST": "0.0.0.0",
-        "PORT": "5432",
-        'NAME': 'xcitri',
+        "USER": get_env("DB_USER"), 
+        "PASSWORD": get_env("DB_PASSWORD"), 
+        "HOST": get_env("DB_HOST"), 
+        "PORT": get_env("DB_PORT"), 
+        'NAME': get_env("DB_NAME"), 
     },
 }
 

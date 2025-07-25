@@ -104,6 +104,21 @@ psql -v ON_ERROR_STOP=1 \
                     END IF;
                   END
                 \$\$;"
+psql -v ON_ERROR_STOP=1 \
+     --username "$PGUSER" \
+     --dbname  "$PGDATABASE" \
+     --command  "DO \$\$ 
+                  BEGIN 
+                    IF NOT EXISTS (
+                      SELECT FROM pg_catalog.pg_roles 
+                      WHERE rolname = 'Ref'
+                    ) THEN
+                      CREATE ROLE Ref 
+                        WITH LOGIN 
+                        ENCRYPTED PASSWORD '${MLST_WEBSITE_PASSWORD}';
+                    END IF;
+                  END
+                \$\$;"
 dropdb --if-exists "$PGDATABASE"
 createdb "$PGDATABASE"
 dropdb --if-exists default

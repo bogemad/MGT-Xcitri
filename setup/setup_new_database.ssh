@@ -111,9 +111,9 @@ psql -v ON_ERROR_STOP=1 \
                   BEGIN 
                     IF NOT EXISTS (
                       SELECT FROM pg_catalog.pg_roles 
-                      WHERE rolname = 'Ref'
+                      WHERE rolname = 'ref'
                     ) THEN
-                      CREATE ROLE Ref 
+                      CREATE ROLE ref 
                         WITH LOGIN 
                         ENCRYPTED PASSWORD '${MLST_WEBSITE_PASSWORD}';
                     END IF;

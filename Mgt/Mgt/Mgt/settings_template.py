@@ -106,7 +106,7 @@ FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o774
 NCBI_RETRIEVAL_FREQUENCY = {'Xcitri': None} # CHANGE to frequency of retrieval
 
 DATABASE_ROUTERS = ['Mgt.router.GenericRouter']
-APPS_DATABASE_MAPPING = {'Xcitri':get_env("DB_NAME") } #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
+APPS_DATABASE_MAPPING = {'Xcitri':get_env("POSTGRES_DB") } #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
 
 DATABASES = {
     'default': {
@@ -127,7 +127,7 @@ DATABASES = {
     # #     'NAME': 'blankdb',#CHANGE to new database name
     # # },
     ## Clawclip example 
-    get_env("DB_NAME"): {
+    get_env("POSTGRES_DB"): {
         "ENGINE": "django.db.backends.postgresql",
         "USER": get_env("POSTGRES_USER"), 
         "PASSWORD": get_env("POSTGRES_PASSWORD"), 

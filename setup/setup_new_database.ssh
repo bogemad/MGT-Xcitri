@@ -106,6 +106,8 @@ psql -v ON_ERROR_STOP=1 \
                 \$\$;"
 dropdb --if-exists "$PGDATABASE"
 createdb "$PGDATABASE"
+dropdb --if-exists default
+createdb default
 psql -d "$PGDATABASE" -c "grant all privileges on database ${db_name} to mlstwebsite"
 psql -d "$PGDATABASE" -c "grant all privileges on database ${db_name} to ${dbuser}"
 sleep 2

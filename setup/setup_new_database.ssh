@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e 
 
 #CHANGE below to select where conda is initialised on your system
 # source ~/.bash_profile
@@ -15,19 +16,25 @@ conda activate ${condaenv};
 #CHANGE full path to top folder of MGT repo
 export path_mgt="$(python -c "from $SETTINGS import PATH_MGT; print(PATH_MGT)")"
 
-source $path_mgt/.env
+set -o allexport; source $path_mgt/.env; set +o allexport
 # cd ../Mgt/Mgt/
 
-export DB_NAME
-export DB_USER
-export DB_PASSWORD
-export DB_HOST
-export DB_PORT
+export PGHOST="${POSTGRES_HOST:-db}"
+export PGPORT="${POSTGRES_PORT:-5432}"
+export PGUSER="${POSTGRES_USER:?Need POSTGRES_USER}"
+export PGPASSWORD="${POSTGRES_PASSWORD:?Need POSTGRES_PASSWORD}"
+export PGDATABASE="${POSTGRES_DB:?Need POSTGRES_DB}"
+
+echo PGHOST="${POSTGRES_HOST}"
+echo PGPORT="${POSTGRES_PORT}"
+echo PGUSER="${POSTGRES_USER}"
+echo PGPASSWORD="${POSTGRES_PASSWORD}"
+echo PGDATABASE="${POSTGRES_DB}"
 
 # #CHANGE species name to be used for database, should match kraken result for contamination checking
-export db_name="$DB_NAME"
+export db_name="$POSTGRES_DB"
 export appname="$(python -c "from $SETTINGS import APPNAME; print(APPNAME)")"
-export dbuser="$DB_USER"
+export dbuser="$POSTGRES_USER"
 
 #CHANGE species name to be used for database, should match kraken result for contamination checking
 export species="$(python -c "from $SETTINGS import SPECIES; print(SPECIES)")"
@@ -88,10 +95,25 @@ os=$(uname -s)
 
 echo "creating database"
 
-PGPASSWORD=$DB_PASSWORD dropdb -U ${dbuser} ${db_name} || echo "No db named ${db_name} to drop"
-PGPASSWORD=$DB_PASSWORD createdb -U ${dbuser} ${db_name}
-PGPASSWORD=$DB_PASSWORD psql -U ${dbuser} -d ${db_name} -c "grant all privileges on database ${db_name} to mlstwebsite"
-PGPASSWORD=$DB_PASSWORD psql -U ${dbuser} -d ${db_name} -c "grant all privileges on database ${db_name} to ${dbuser}"
+psql -v ON_ERROR_STOP=1 \
+     --username "$PGUSER" \
+     --dbname  "$PGDATABASE" \
+     --command  "DO \$\$ 
+                  BEGIN 
+                    IF NOT EXISTS (
+                      SELECT FROM pg_catalog.pg_roles 
+                      WHERE rolname = 'mlstwebsite'
+                    ) THEN
+                      CREATE ROLE mlstwebsite 
+                        WITH LOGIN 
+                        ENCRYPTED PASSWORD '${MLST_WEBSITE_PASSWORD}';
+                    END IF;
+                  END
+                \$\$;"
+dropdb --if-exists "$PGDATABASE"
+createdb "$PGDATABASE"
+psql -d "$PGDATABASE" -c "grant all privileges on database ${db_name} to mlstwebsite"
+psql -d "$PGDATABASE" -c "grant all privileges on database ${db_name} to ${dbuser}"
 sleep 2
 
 cd ${path_mgt}
@@ -239,7 +261,7 @@ mv Scripts/autoGenViews.py $appname"/models/"
 
 sleep 2
 rm Scripts/views_head
-PGPASSWORD=$DB_PASSWORD psql -U ${dbuser} -d ${db_name} -f ./runOnDb.sql
+psql -f ./runOnDb.sql
 
 
 #cd ../
@@ -254,3 +276,5 @@ echo $(pwd)
 # echo $(pwd)
 
 python manage.py migrate --settings $settings_prefix 
+touch "${DB_INIT_FLAG}"
+echo "✅ Database initialized, flag created at ${DB_INIT_FLAG}"

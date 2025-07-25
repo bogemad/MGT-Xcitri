@@ -111,10 +111,10 @@ APPS_DATABASE_MAPPING = {'Xcitri':get_env("DB_NAME") } #CHANGE change to appname
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": get_env("DB_USER"), 
-        "PASSWORD": get_env("DB_PASSWORD"), 
-        "HOST": get_env("DB_HOST"), 
-        "PORT": get_env("DB_PORT"), 
+        "USER": get_env("POSTGRES_USER"), 
+        "PASSWORD": get_env("POSTGRES_PASSWORD"), 
+        "HOST": get_env("POSTGRES_HOST"), 
+        "PORT": get_env("POSTGRES_PORT"), 
         'NAME': 'default',
     },
     ## Database configuration example 
@@ -129,11 +129,11 @@ DATABASES = {
     ## Clawclip example 
     get_env("DB_NAME"): {
         "ENGINE": "django.db.backends.postgresql",
-        "USER": get_env("DB_USER"), 
-        "PASSWORD": get_env("DB_PASSWORD"), 
-        "HOST": get_env("DB_HOST"), 
-        "PORT": get_env("DB_PORT"), 
-        'NAME': get_env("DB_NAME"), 
+        "USER": get_env("POSTGRES_USER"), 
+        "PASSWORD": get_env("POSTGRES_PASSWORD"), 
+        "HOST": get_env("POSTGRES_HOST"), 
+        "PORT": get_env("POSTGRES_PORT"), 
+        'NAME': get_env("POSTGRES_DB"), 
     },
 }
 

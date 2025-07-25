@@ -1,11 +1,15 @@
-version: "3.8"
-
 services:
   db:
     image: postgres:16
     restart: unless-stopped
     env_file:
-      - .env.db
+      - .env
+    environment:
+      - PGHOST=${POSTGRES_HOST}
+      - PGPORT=${POSTGRES_PORT}
+      - PGUSER=${POSTGRES_USER}
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - PGDATABASE=${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -27,16 +31,22 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+      - init_flag:/app/.db_initialized
     entrypoint: >
       bash -lc "
-        # Run migrations / init script only if needed
-        python manage.py migrate --no-input &&
-        # If you have custom seeding logic:
-        [[ -z $(psql -tAc \"SELECT 1 FROM pg_database WHERE datname='xcitri';\") ]] \
-          && cd setup && ./setup_new_database.ssh Xcitri_inputs.setupPath || echo 'DB exists' &&
+        set -o allexport; source .env; set +o allexport;
+        if [ ! -f \"${DB_INIT_FLAG}\" ]; then
+          echo '⚙️  First‐run: initializing database...';
+          cd setup;
+          ./setup_new_database.ssh Xcitri_inputs.setupPath;
+        else
+          echo '✅ Skipping DB init (flag exists at ${DB_INIT_FLAG})';
+        fi;
         # Finally start the server
-        python manage.py runserver 0.0.0.0:8000 --settings Mgt.settings_template
+        #cd /app/Mgt/Mgt
+        #python manage.py runserver 0.0.0.0:8000 --settings Mgt.settings_template
       "
 
 volumes:
   postgres_data:
+  init_flag:

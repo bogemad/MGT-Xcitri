@@ -235,10 +235,17 @@ python manage.py migrate --settings $settings_prefix --database=$db_name
 python manage.py migrate --settings $settings_prefix
 echo "add ref user"
 
-if ! python manage.py shell --settings $settings_prefix -c "from django.contrib.auth.models import User; User.objects.filter(username='$superusername').exists()"; then
-    python manage.py createsuperuser --settings $settings_prefix --username $superusername --email $superuseremail
+# Query and capture True/False
+user_exists=$(python manage.py shell \
+    --settings "$settings_prefix" \
+    -c "from django.contrib.auth.models import User; \
+        print(User.objects.filter(username='$superusername').exists())" \
+    | tr -d '\r\n')
+
+if [ "$user_exists" = "True" ]; then
+    echo "✅ Superuser '$superusername' already exists. Skipping creation."    
 else
-    echo "Superuser '$superusername' already exists. Skipping superuser creation."
+    python manage.py createsuperuser --no-input --settings $settings_prefix --username $superusername --email $superuseremail
 fi
 
 if [ "$os" = "Darwin" ]; then

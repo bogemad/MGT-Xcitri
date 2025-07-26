@@ -40,7 +40,7 @@ SETTINGS_PREFIX="Mgt.settings_template"
 REFALLELES=os.path.join(BASE_DIR, 'species_specific_alleles/')
 
 # CHANGE superusername of the django application 
-SUPERUSERNAME="ref"
+SUPERUSERNAME="Ref"
 
 # CHANGE superuseremail of the django application 
 SUPERUSEREMAIL="daniel.bogema@dpi.nsw.gov.au"

@@ -31,7 +31,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-      - init_flag:/app/.db_initialized
+      - init_flag:/var/lib/db_init
     entrypoint: >
       bash -lc "
         set -o allexport; source .env; set +o allexport;

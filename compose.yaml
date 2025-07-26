@@ -43,8 +43,8 @@ services:
           echo '✅ Skipping DB init (flag exists at ${DB_INIT_FLAG})';
         fi;
         # Finally start the server
-        #cd /app/Mgt/Mgt
-        #python manage.py runserver 0.0.0.0:8000 --settings Mgt.settings_template
+        cd /app/Mgt/Mgt
+        python manage.py runserver 0.0.0.0:8000 --settings Mgt.settings_template
       "
 
 volumes:

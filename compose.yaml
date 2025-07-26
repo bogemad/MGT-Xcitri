@@ -35,6 +35,10 @@ services:
     entrypoint: >
       bash -lc "
         set -o allexport; source .env; set +o allexport;
+        # Conda init  
+        . /opt/conda/etc/profile.d/conda.sh  
+        conda activate mgtenv
+        #Build server if not done already
         if [ ! -f \"${DB_INIT_FLAG}\" ]; then
           echo '⚙️  First‐run: initializing database...';
           cd setup;

@@ -35,9 +35,6 @@ services:
     entrypoint: >
       bash -lc "
         set -o allexport; source .env; set +o allexport;
-        # Conda init  
-        . /opt/conda/etc/profile.d/conda.sh  
-        conda activate mgtenv
         #Build server if not done already
         if [ ! -f \"${DB_INIT_FLAG}\" ]; then
           echo '⚙️  First‐run: initializing database...';
@@ -46,6 +43,9 @@ services:
         else
           echo '✅ Skipping DB init (flag exists at ${DB_INIT_FLAG})';
         fi;
+        # Conda init  
+        . /opt/conda/etc/profile.d/conda.sh  
+        conda activate mgtenv
         # Finally start the server
         cd /app/Mgt/Mgt
         python manage.py runserver 0.0.0.0:8000 --settings Mgt.settings_template

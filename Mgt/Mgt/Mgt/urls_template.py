@@ -26,6 +26,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
 	# url(r'^admin/', admin.site.urls),
+    url(r"^accounts/activate/$", AutoActivationView.as_view(), name="django_registration_activate",),
 	url(r'^accounts/', include('django_registration.backends.activation.urls')),
 	url(r'^accounts/', include('django.contrib.auth.urls')),
 	url('', include(('Home.urls', 'Home'))),

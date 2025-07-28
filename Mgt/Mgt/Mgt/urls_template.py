@@ -26,10 +26,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
 	# url(r'^admin/', admin.site.urls),
-	url('', include(('Home.urls', 'Home'))),
-	url('', include(('MGTdb_shared.urls'))), #CHANGE add new database name with regex at the start
 	url(r'^accounts/', include('django_registration.backends.activation.urls')),
 	url(r'^accounts/', include('django.contrib.auth.urls')),
+	url('', include(('Home.urls', 'Home'))),
+	url('', include(('MGTdb_shared.urls'))), #CHANGE add new database name with regex at the start
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Broken registration urls fixed at: https://github.com/tutumcloud/django-registration/blob/master/registration/auth_urls.py

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{% trans "Activate your account" %}</h1>
+  <p>{% trans "Enter your activation key to complete registration:" %}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.activation_key.label_tag }}
+    {{ form.activation_key }}
+    <button type="submit">{% trans "Activate" %}</button>
+  </form>
+{% endblock %}

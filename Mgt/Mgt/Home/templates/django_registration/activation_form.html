@@ -1,14 +1,24 @@
 {% extends "Home/base.html" %}
-{% load i18n %}
 
-{% block content %}
-  <h1>{% trans "Activate your account" %}</h1>
-  <p>{% trans "Enter your activation key to complete registration:" %}</p>
+{% block titleName %}Activate Account{% endblock %}
 
-  <form method="post">
-    {% csrf_token %}
-    {{ form.activation_key.label_tag }}
-    {{ form.activation_key }}
-    <button type="submit">{% trans "Activate" %}</button>
-  </form>
+{% block page_content %}
+
+<h3 class="title is-3"> Activate your account </h3>
+
+<p>Please enter your activation key below to complete registration.</p>
+<br>
+
+<form action="" method="post">
+    <div style="display:none">
+        <input type="hidden" value="{{ csrf_token }}" name="csrfmiddlewaretoken">
+    </div>
+    {{ form.activation_key.errors }}
+    <p>
+      <label for="id_activation_key">{% trans "Activation Key:" %}</label>
+      {{ form.activation_key }}
+      <input class="btn btn-info" type="submit" value="{% trans 'Activate account' %}" />
+    </p>
+</form>
+
 {% endblock %}

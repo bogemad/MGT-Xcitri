@@ -65,19 +65,34 @@
 			{% block nav-species %} <a class="navFirst nav-link" href="{% url 'Home:index' %}">Species</a> {% endblock %}
 		</li>
 		{% if user.is_authenticated %}
-			<li class="nav-item">
-				{% block nav-project %} <a class="navFirst nav-link" href="{% url 'Home:home' %}">Projects</a> {% endblock %}
-			</li>
-			<li class="nav-item">
-				<a class="navFirst nav-link" href="{% url 'logout' %}"> Logout </a>
-			</li>
+		<li class="nav-item">
+			{% block nav-project %} 
+			<a class="navFirst nav-link" href="{% url 'Home:home' %}">Projects</a> 
+			{% endblock %}
+		</li>
+		<li class="nav-item">
+			<form method="post" action="{% url 'logout' %}" style="display:inline;">
+			{% csrf_token %}
+			<button
+				type="submit"
+				class="navFirst nav-link btn btn-link"
+				style="padding: 0; border: none; background: none;"
+			>
+				Logout
+			</button>
+			</form>
+		</li>
 		{% else %}
-			<li class="nav-item">
-				{% block nav-login %} <a class="navFirst nav-link" href="{% url 'login' %}">Login</a> {% endblock %}
-			</li>
-			<li class="nav-item">
-				{% block nav-register %} <a class="navFirst nav-link" href="{% url 'django_registration_register' %}">Register</a> {% endblock %}
-			</li>
+		<li class="nav-item">
+			{% block nav-login %} 
+			<a class="navFirst nav-link" href="{% url 'login' %}">Login</a> 
+			{% endblock %}
+		</li>
+		<li class="nav-item">
+			{% block nav-register %} 
+			<a class="navFirst nav-link" href="{% url 'django_registration_register' %}">Register</a> 
+			{% endblock %}
+		</li>
 		{% endif %}
 		<li class="nav-item">
 			{% block nav-contact %} <a class="navFirst nav-link" href="{% url 'Home:contact' %}">Contact us</a> {% endblock %}

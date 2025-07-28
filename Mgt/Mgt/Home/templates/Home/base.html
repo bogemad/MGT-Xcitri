@@ -71,15 +71,20 @@
 			{% endblock %}
 		</li>
 		<li class="nav-item">
-			<form method="post" action="{% url 'logout' %}">
-			{% csrf_token %}
-			<button
-				type="submit"
-				class="navFirst nav-link btn btn-link"
-				style="padding: 0; border: none; background: none;"
+			<form
+			  method="post"
+			  action="{% url 'logout' %}"
+			  class="d-inline-block"
+			  style="margin: 0; padding:0;"
 			>
+			  {% csrf_token %}
+			  <button
+				type="submit"
+				class="nav-link navFirst btn btn-link align-middle p-0"
+				style="background: none; border: none;"
+			  >
 				Logout
-			</button>
+			  </button>
 			</form>
 		</li>
 		{% else %}

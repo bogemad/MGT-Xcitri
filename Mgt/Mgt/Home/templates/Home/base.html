@@ -70,18 +70,17 @@
 			<a class="navFirst nav-link" href="{% url 'Home:home' %}">Projects</a> 
 			{% endblock %}
 		</li>
-		<li class="nav-item">
+		<li class="nav-item d-flex align-items-center">
 			<form
 			  method="post"
 			  action="{% url 'logout' %}"
-			  class="d-inline-block"
-			  style="margin: 0; padding:0;"
+			  class="m-0 p-0"
 			>
 			  {% csrf_token %}
 			  <button
 				type="submit"
-				class="nav-link navFirst btn btn-link align-middle p-0"
-				style="background: none; border: none;"
+				class="nav-link navFirst btn btn-link m-0"
+				style="padding: 0.5rem 1rem; background: none; border: none;"
 			  >
 				Logout
 			  </button>

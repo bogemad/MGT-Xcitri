@@ -1,47 +1,27 @@
-# MGT-local
-Install a local blank version of the MGT database
+# MGT-Xcitri forked from https://github.com/LanLab/MGT-local
+Install a local blank version of the MGT database for Xanthomonas citri
 
-The MGT database and associated scripts are presented here in a format that should make them installable on a local machine. 
-The MGT was written as a website and associated database so the setup of a local version is more complex than a normal command line program.
+The MGT database and associated scripts are presented here in a format that should make them installable on a local machine using docker compose. 
 
-# Installation:
-## 1. input file generation
-1. reference genome (fasta format)
-2. lociLocationsInRef.txt - a tab delimited file with a row for each locus with columns:
-   1. locus id
-   2. reference genome start
-   3. reference genome end
-   4. \+ or - strand
-   5. chromosome number (1 for all loci for most bacteria)
-3. folder named "Schemes" -  with one file for each MGT level named MGTN_gene_accessions.txt where N is the level number. Each file lists the loci to be used in each level.
-4. setupPath.py - a file with variables for file paths to setup a new database. 
+Docker is required to run this website.
 
-examples are in the setup/example_inputs folder 
+# Installation
+````
+   git clone https://github.com/bogemad/MGT-Xcitri.git
+   
+   cd MGT-Xcitri
+   
+   docker compose up -d --build
+````
 
-## 2. install dependencies
-1. install [postgres](https://www.postgresql.org/download/)
-2. [miniconda](https://docs.conda.io/en/latest/miniconda.html) or [mamba](https://mamba.readthedocs.io/en/latest/installation.html)(recommended) for environment management
-3. create an environment within conda/mamba using the included yaml file (/setup/mgt_conda_env.yaml). Default name is mgtenv.
-    ````
-    conda env create --file=/path/to/MGT-local/setup/mgt_conda_env.yaml
-    or
-    mamba env create --file=/path/to/MGT-local/setup/mgt_conda_env.yaml
-    ````
-
-## 3. modify settings
-In the /Mgt/Mgt/Mgt folder find the settings_template.py file and rename any lines with #CHANGE comments as per comment instructions. You can also make a copy of this file and update the changes in the copy. *Clawclip* is an example of what the changes would look like. 
-
-## 4. run /setup/setup_new_database.ssh
-use the command as follows from the setup directory: 
-`./setup_new_database.ssh example_inputs.setupPath`
-in command line use postgres password when prompted
 ## 5. access local mgt database site 
-run `python manage.py runserver --settings Mgt.settings_template` and access the website locally using host in settings file (http://localhost:8000/ by default)
+Access the website locally using http://localhost:8000/ by default
+
 ## 6. typing isolates
 Typing of isolates is in three stages:
-1. Run reads_to_alleles.py script to generate an alleles file from reads or genomes following the readme in the /MGT-local/Mgt/Mgt/MGT_processing/Reads2MGTAlleles folder
+1. Run reads_to_alleles.py script to generate an alleles file from reads or genomes following the readme in the /MGT-Xcitri/Mgt/Mgt/MGT_processing/Reads2MGTAlleles folder
 2. Upload the alleles files along with associated metadata to the local site (via a project page)
-3. run the /MGT-local/Mgt/Mgt/Scripts/cron_pipeline.py script to call final alleles and MGT types
+3. run the /MGT-local/Mgt/Mgt/Scripts/cron_pipeline.py script to call final alleles and MGT types (under construction, below should not work currently...)
 
    ````
    conda activate mgt_env

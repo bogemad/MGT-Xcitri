@@ -23,7 +23,7 @@ dependencies:
   - sistr_cmd
   - pip:
     - django-countries
-    - django-registration
+    - django-registration==3.4
     - django-tables2
     - djangorestframework
     - pycountry-convert

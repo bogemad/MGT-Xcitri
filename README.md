@@ -14,10 +14,10 @@ Docker is required to run this website.
    docker compose up -d --build
 ````
 
-## 5. access local mgt database site 
+## 1. access local mgt database site 
 Access the website locally using http://localhost:8000/ by default
 
-## 6. typing isolates
+## 2. typing isolates
 Typing of isolates is in three stages:
 1. Run reads_to_alleles.py script to generate an alleles file from reads or genomes following the readme in the /MGT-Xcitri/Mgt/Mgt/MGT_processing/Reads2MGTAlleles folder
 2. Upload the alleles files along with associated metadata to the local site (via a project page)
@@ -30,3 +30,19 @@ Typing of isolates is in three stages:
    
    python cron_pipeline.py -s /path/to/settings_file.py -d Blankdb --allele_to_db --local
    ````
+
+## 3. Database save/dump
+Save (dump) the database from a MGT-Xcitri container for backup or to use on another machine.
+
+````
+cd MGT-Xcitri
+./dump_db.sh                 # writes xcitri-<timestamp>.sql
+````
+
+### 4. Database load/restore
+Load a previously saved database to a MGT-Xcitri container
+
+````
+cd MGT-Xcitri
+./load_db.sh path-or-URL-to-dump.sql
+````

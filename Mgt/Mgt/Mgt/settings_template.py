@@ -92,8 +92,8 @@ TEMPLATE_LOADERS = (
 
 MANAGEMENT_COMMANDS = ['Mgt.management.commands.show_urls']
 
-MY_URL = "http://10.199.147.71:8000"
-# MY_URL = "http://127.0.0.1:8000"
+MY_URL = get_env("MGT_URL")
+
 WSGI_APPLICATION = 'Mgt.wsgi.application'
 
 FILE_UPLOAD_PERMISSIONS=0o774

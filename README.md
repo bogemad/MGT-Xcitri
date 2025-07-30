@@ -14,6 +14,44 @@ Docker is required to run this website.
    docker compose up -d --build
 ````
 
+# Create MGT-Xcitri/.env file
+
+See example.env in MGT-Xcitri/
+
+```
+#Keep these settings to ensure consistent with public db dumps
+POSTGRES_DB=xcitri
+POSTGRES_USER=mgt
+POSTGRES_PASSWORD=<enter-password-here>
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+SECRET_KEY=
+DEBUG=False
+MLST_WEBSITE_PASSWORD=<enter-password-here>
+DJANGO_SUPERUSER_PASSWORD=<enter-password-here>
+DB_INIT_FLAG=/var/lib/db_init/.db_initialized
+
+# Use SMTP in prod; prints to console in dev (change "console" in the line below to "smtp" if you wish to use a real email acccount as authentication server)
+EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+
+# Your real SMTP details (if you wish to use real email authentication)
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+EMAIL_USE_TLS=
+EMAIL_USE_SSL=
+EMAIL_TIMEOUT=
+
+# Who should the emails appear to come from?
+DEFAULT_FROM_EMAIL=
+SERVER_EMAIL=
+
+# Keep this if running server on current machine, change to remove hostname or IP address if running remotely. 
+MGT_URL="http://127.0.0.1:8000"
+```
+
+
 ## 1. access local mgt database site 
 Access the website locally using http://localhost:8000/ by default
 

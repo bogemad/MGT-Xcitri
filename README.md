@@ -34,9 +34,15 @@ Typing of isolates is in three stages:
 ## 3. Database save/dump
 Save (dump) the database from a MGT-Xcitri container for backup or to use on another machine.
 
-`./scripts/dump_db.sh                 # writes xcitri-<timestamp>.sql`
+````
+cd MGT-Xcitri
+./dump_db.sh                 # writes xcitri-<timestamp>.sql
+````
 
 ### 4. Database load/restore
 Load a previously saved database to a MGT-Xcitri container
 
-`./scripts/load_db.sh path-or-URL-to-dump.sql`
+````
+cd MGT-Xcitri
+./load_db.sh path-or-URL-to-dump.sql
+````

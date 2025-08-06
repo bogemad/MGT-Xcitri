@@ -30,7 +30,7 @@ cd MGT-Xcitri
 cp example.env .env
 
 # 3) Build & start the stack
-docker compose up -d --build
+docker compose up --build
 ```
 
 ---

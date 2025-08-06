@@ -1,86 +1,188 @@
-# MGT-Xcitri forked from https://github.com/LanLab/MGT-local
-Install a local blank version of the MGT database for Xanthomonas citri
+# MGT-Xcitri
 
-The MGT database and associated scripts are presented here in a format that should make them installable on a local machine using docker compose. 
+Forked from [LanLab/MGT-local](https://github.com/LanLab/MGT-local)  
+A Docker-powered, Django-based multilevel genome typing (MGT) database & web interface for _Xanthomonas citri_.
 
-Docker is required to run this website.
+---
 
-# Installation
-````
-   git clone https://github.com/bogemad/MGT-Xcitri.git
-   
-   cd MGT-Xcitri
-   
-   docker compose up -d --build
-````
+## Overview
 
-# Create MGT-Xcitri/.env file
+This project bundles:
 
-See example.env in MGT-Xcitri/
+- A **Django** web application for browsing and querying MGT data  
+- A **PostgreSQL** backend, automatically initialized on first run  
+- A simple **email activation** workflow for user accounts  
+- Scripts for **dumping/restoring** your local database  
+- A pipeline for **calling alleles** from read/genome files
+
+Everything runs via **Docker Compose**—no manual Python or Postgres installs required.
+
+---
+
+## Installation
+
+```bash
+# 1) Clone the repo
+git clone https://github.com/bogemad/MGT-Xcitri.git
+cd MGT-Xcitri
+
+# 2) Copy & edit your env file
+cp example.env .env
+
+# 3) Build & start the stack
+docker compose up -d --build
+```
+
+---
+
+## Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) (20+ recommended)  
+- Docker Compose (v2 plugin or standalone)  
+
+> **Tip**: On Linux you may need to add your user to `docker` group to run Docker without `sudo`.
+
+---
+
+## Configuration (.env)
+
+Fill in MGT-Xcitri/.env (see example.env for comments). At minimum set your passwords and Django SECRET_KEY:
 
 ```
-#Keep these settings to ensure consistent with public db dumps
+##########################
+# PostgreSQL (backend)
+##########################
 POSTGRES_DB=xcitri
 POSTGRES_USER=mgt
-POSTGRES_PASSWORD=<enter-password-here>
+POSTGRES_PASSWORD=<choose-a-password>
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
-SECRET_KEY=
+
+##########################
+# Django settings
+##########################
+SECRET_KEY=<choose-a-secret-key>
 DEBUG=False
-MLST_WEBSITE_PASSWORD=<enter-password-here>
-DJANGO_SUPERUSER_PASSWORD=<enter-password-here>
 DB_INIT_FLAG=/var/lib/db_init/.db_initialized
 
-# Use SMTP in prod; prints to console in dev (change "console" in the line below to "smtp" if you wish to use a real email acccount as authentication server)
+##########################
+# Initial user & DB setup
+##########################
+MLST_WEBSITE_PASSWORD=<choose-a-password>
+DJANGO_SUPERUSER_PASSWORD=<choose-a-password>
+
+##########################
+# Email (for activation & reset)
+##########################
+# Use console printing in local deployment:
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 
-# Your real SMTP details (if you wish to use real email authentication)
-EMAIL_HOST=
-EMAIL_PORT=
-EMAIL_HOST_USER=
-EMAIL_HOST_PASSWORD=
-EMAIL_USE_TLS=
-EMAIL_USE_SSL=
-EMAIL_TIMEOUT=
+# For real SMTP:
+# EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+# EMAIL_HOST=smtp.example.com
+# EMAIL_PORT=587
+# EMAIL_HOST_USER=you@example.com
+# EMAIL_HOST_PASSWORD=<app-password>
+# EMAIL_USE_TLS=True
+# DEFAULT_FROM_EMAIL=you@example.com
+# SERVER_EMAIL=you@example.com
 
-# Who should the emails appear to come from?
-DEFAULT_FROM_EMAIL=
-SERVER_EMAIL=
-
-# Keep this if running server on current machine, change to remove hostname or IP address if running remotely. 
 MGT_URL="http://127.0.0.1:8000"
 ```
 
+## Running the Server
 
-## 1. access local mgt database site 
-Access the website locally using http://localhost:8000/ by default
+After `docker compose up`:
 
-## 2. typing isolates
-Typing of isolates is in three stages:
-1. Run reads_to_alleles.py script to generate an alleles file from reads or genomes following the readme in the /MGT-Xcitri/Mgt/Mgt/MGT_processing/Reads2MGTAlleles folder
-2. Upload the alleles files along with associated metadata to the local site (via a project page)
-3. run the /MGT-local/Mgt/Mgt/Scripts/cron_pipeline.py script to call final alleles and MGT types (under construction, below should not work currently...)
+- **First run only**: the init script will create the DB schema, superuser, and MLST role.  
+- **Subsequent runs** skip DB init and go straight to Django.
 
-   ````
-   conda activate mgt_env
-   
-   cd /path/to/MGT-local/Mgt/Mgt/Scripts
-   
-   python cron_pipeline.py -s /path/to/settings_file.py -d Blankdb --allele_to_db --local
-   ````
+Open your browser at:
 
-## 3. Database save/dump
-Save (dump) the database from a MGT-Xcitri container for backup or to use on another machine.
+```
+http://127.0.0.1:8000/
+```
+or change to the ip address of your remote machine if running remotely (also change MGT_URL in .env)
 
-````
-cd MGT-Xcitri
-./dump_db.sh                 # writes xcitri-<timestamp>.sql
-````
+---
 
-### 4. Database load/restore
-Load a previously saved database to a MGT-Xcitri container
+## Testing Email
 
-````
-cd MGT-Xcitri
+- **Console backend** writes activation emails to your web logs:
+
+  ```bash
+  docker compose logs -f web
+  ```
+
+- **SMTP** will send real mail—trigger a password reset at `/accounts/password_reset/`.
+
+---
+
+## Typing Isolates (Pipeline)
+
+> **Under development**—the cron pipeline is not fully wired up.  
+
+1. **Generate alleles** from reads/genomes:  
+   ```bash
+   # on host or inside the web container
+   conda activate mgtenv
+   cd Mgt/Mgt/MGT_processing/Reads2MGTAlleles
+   ./README.md  # follow that README to run reads_to_alleles.py
+   ```
+
+2. **Upload** the resulting allele files + metadata via the web UI (create a Project).
+
+3. **(Future)** Run the cron pipeline to finalize allele calls & MGT assignment:
+
+   ```bash
+   cd Mgt/Mgt/Scripts
+   python cron_pipeline.py \
+     -s Mgt.settings_template \
+     -d xcitri \
+     --allele_to_db \
+     --local
+   ```
+
+---
+
+## Dump & Restore Database
+
+We provide helper scripts under `scripts/` so **no Docker knowledge** is needed.
+
+### Dump (export)
+
+```bash
+# writes xcitri-<timestamp>.sql in the repo root
+
+./dump_db.sh [optional-output-filename.sql]
+```
+
+### Load (import)
+
+```bash
+# restores from a local file or remote URL
 ./load_db.sh path-or-URL-to-dump.sql
-````
+```
+
+> These scripts use your running `db` service and the credentials in `.env.db`.
+
+---
+
+## 🚧 Pushing to Remote
+
+To push a dump to a staging/production Postgres (outside Docker):
+
+```bash
+./push_db.sh \
+  path-to-local-dump.sql \
+  postgres://user:pass@staging.example.org:5432/xcitri
+```
+
+---
+
+## 📄 License
+
+GPLv3.0 License — see [LICENSE](LICENSE) for details.  
+Feel free to reuse, adapt, and redistribute for academic and non-commercial use.  
+
+

@@ -30,7 +30,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
-SECRET_KEY = 'hhgfytrtfgfytrytfhfy' # CHANGE to new secret key 
+SECRET_KEY = get_env("SECRET_KEY") # CHANGE to new secret key 
 
 DEBUG = True
 

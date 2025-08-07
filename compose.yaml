@@ -38,8 +38,9 @@ services:
         #Build server if not done already
         if [ ! -f \"${DB_INIT_FLAG}\" ]; then
           echo '⚙️  First‐run: initializing database...';
+          find . -type f -print0 | xargs -0 dos2unix > /dev/null;
           cd setup;
-          ./setup_new_database.ssh Xcitri_inputs.setupPath;
+          bash setup_new_database.ssh Xcitri_inputs.setupPath;
         else
           echo '✅ Skipping DB init (flag exists at ${DB_INIT_FLAG})';
         fi;

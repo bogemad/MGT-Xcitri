@@ -1,14 +1,15 @@
 from django.views.generic.base import TemplateView
 from django_countries import countries
+from django.shortcuts import render
 
 class IsoBulkUploadInst(TemplateView):
 
 	# template_name = "Salmonella/isoBulkUploadInst.html"
  
-	def get_template_names(self):
+	def get(self, request, *args, **kwargs):
 		org = self.kwargs.get('org')
 		print('bulk upload for:', org)
-		return render_to_response("Templates/isoBulkUploadInst.html", {"organism":org})
+		return render(request, "Templates/isoBulkUploadInst.html", {"organism":org})
 		# return ["Templates/isoBulkUploadInst.html"]
 
 

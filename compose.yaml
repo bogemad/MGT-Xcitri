@@ -5,11 +5,11 @@ services:
     env_file:
       - .env
     environment:
-      - PGHOST=${POSTGRES_HOST}
-      - PGPORT=${POSTGRES_PORT}
-      - PGUSER=${POSTGRES_USER}
-      - PGPASSWORD=${POSTGRES_PASSWORD}
-      - PGDATABASE=${POSTGRES_DB}
+      - PGHOST=${HOSTNAME}
+      - PGPORT=${PORT}
+      - PGUSER=${USERNAME}
+      - PGPASSWORD=${PASSWORD}
+      - PGDATABASE=${DBNAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

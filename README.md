@@ -46,48 +46,50 @@ docker compose up --build
 
 ## Configuration (.env)
 
-Fill in MGT-Xcitri/.env (see example.env for comments). At minimum set your passwords and Django SECRET_KEY:
+Fill in MGT-Xcitri/.env (see example.env for comments). At manually set POSTGRES_PASSWORD, DJANGO_EMAIL and DJANGO_SECRET_KEY:
 
 ```
-##########################
-# PostgreSQL (backend)
-##########################
-POSTGRES_DB=xcitri
+#Postgres settings  ### MUST add POSTGRES_PASSWORD
 POSTGRES_USER=mgt
-POSTGRES_PASSWORD=<choose-a-password>
+POSTGRES_PASSWORD=**<enter-password-here>**
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
+POSTGRES_DB=xcitri
 
-##########################
-# Django settings
-##########################
-SECRET_KEY=<choose-a-secret-key>
-DEBUG=False
+#Django Settings ### MUST add DJANGO_EMAIL and DJANGO_SECRET_KEY
+
+DJANGO_SUPERUSER=Ref
+DJANGO_EMAIL=**<enter-email-here>**
+DJANGO_SECRET_KEY=**<enter-random-secret-key-here>**
+DJANGO_SUPERUSER_PASSWORD=${POSTGRES_PASSWORD}
 DB_INIT_FLAG=/var/lib/db_init/.db_initialized
 
-##########################
-# Initial user & DB setup
-##########################
-MLST_WEBSITE_PASSWORD=<choose-a-password>
-DJANGO_SUPERUSER_PASSWORD=<choose-a-password>
-
-##########################
-# Email (for activation & reset)
-##########################
-# Use console printing in local deployment:
+# Email authentication settings
+# Change "console" in the line below to "smtp" and complete and uncomment SMTP email settings below if you wish to use a real email acccount as your authentication server
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 
-# For real SMTP:
-# EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
-# EMAIL_HOST=smtp.example.com
-# EMAIL_PORT=587
-# EMAIL_HOST_USER=you@example.com
-# EMAIL_HOST_PASSWORD=<app-password>
-# EMAIL_USE_TLS=True
-# DEFAULT_FROM_EMAIL=you@example.com
-# SERVER_EMAIL=you@example.com
+# Your real SMTP details (if you wish to use real email authentication)
+#EMAIL_HOST=
+#EMAIL_PORT=
+#EMAIL_HOST_USER=
+#EMAIL_HOST_PASSWORD=
+#EMAIL_USE_TLS=
+#EMAIL_USE_SSL=
+#EMAIL_TIMEOUT=
 
+# Who should the emails appear to come from?
+#DEFAULT_FROM_EMAIL=
+#SERVER_EMAIL=
+
+# Keep this if running server on current machine
 MGT_URL="http://127.0.0.1:8000"
+
+#Other settings - generally no change needed to these
+DEBUG=False
+MLST_WEBSITE_PASSWORD=${POSTGRES_PASSWORD}
+
+
+
 ```
 
 ## Running the Server

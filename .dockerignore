@@ -1,0 +1,12 @@
+.git
+.gitignore
+**/__pycache__/
+**/*.pyc
+.env
+.env.*
+db_dumps/
+scripts/*.sql
+*.md
+*.log
+*.sqlite*
+node_modules/

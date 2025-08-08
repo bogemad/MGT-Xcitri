@@ -6,12 +6,7 @@ channels:
   - defaults
 dependencies:
   - python>=3.10
-  - shovill
-  - assembly-stats
-  - mlst
-  - kraken=1
   - biopython
-  - mafft
   - psycopg2>=2.8
   - dateparser>=1.1.1
   - django=4.1.7

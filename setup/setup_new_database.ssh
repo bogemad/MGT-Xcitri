@@ -19,11 +19,17 @@ export path_mgt="$(python -c "from $SETTINGS import PATH_MGT; print(PATH_MGT)")"
 set -o allexport; source $path_mgt/.env; set +o allexport
 # cd ../Mgt/Mgt/
 
-export PGHOST="${POSTGRES_HOST:-db}"
-export PGPORT="${POSTGRES_PORT:-5432}"
-export PGUSER="${POSTGRES_USER:?Need POSTGRES_USER}"
-export PGPASSWORD="${POSTGRES_PASSWORD:?Need POSTGRES_PASSWORD}"
-export PGDATABASE="${POSTGRES_DB:?Need POSTGRES_DB}"
+export POSTGRES_USER="${USERNAME:?Need USERNAME}"
+export POSTGRES_DB="${DBNAME:?Need DBNAME}"
+export POSTGRES_PASSWORD="${PASSWORD:?Need PASSWORD}"
+export POSTGRES_HOST="${HOSTNAME:-db}"
+export POSTGRES_PORT="${PORT:-5432}"
+export PGHOST="${POSTGRES_HOST}"
+export PGPORT="${POSTGRES_PORT}"
+export PGUSER="${POSTGRES_USER}"
+export PGPASSWORD="${POSTGRES_PASSWORD}"
+export PGDATABASE="${POSTGRES_DB}"
+
 
 # #CHANGE species name to be used for database, should match kraken result for contamination checking
 export db_name="$POSTGRES_DB"
@@ -61,8 +67,8 @@ export schemeno="$(python -c "from $SETTINGS import SCHEME_NO; print(SCHEME_NO)"
 export odcls="$(python -c "from $SETTINGS import ODCLS; print(ODCLS)")"
 
 #CHANGE login details of initial user
-export superusername="$(python -c "from $SETTINGS import SUPERUSERNAME; print(SUPERUSERNAME)")"
-export superuseremail=""$(python -c "from $SETTINGS import SUPERUSEREMAIL; print(SUPERUSEREMAIL)")""
+export superusername="${DJANGO_SUPERUSER}"
+export superuseremail="${DJANGO_EMAIL}"
 
 echo "db_name = $db_name"
 echo "appname = $appname"

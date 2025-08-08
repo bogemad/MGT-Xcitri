@@ -19,17 +19,11 @@ export path_mgt="$(python -c "from $SETTINGS import PATH_MGT; print(PATH_MGT)")"
 set -o allexport; source $path_mgt/.env; set +o allexport
 # cd ../Mgt/Mgt/
 
-export POSTGRES_USER="${USERNAME:?Need USERNAME}"
-export POSTGRES_DB="${DBNAME:?Need DBNAME}"
-export POSTGRES_PASSWORD="${PASSWORD:?Need PASSWORD}"
-export POSTGRES_HOST="${HOSTNAME:-db}"
-export POSTGRES_PORT="${PORT:-5432}"
-export PGHOST="${POSTGRES_HOST}"
-export PGPORT="${POSTGRES_PORT}"
-export PGUSER="${POSTGRES_USER}"
-export PGPASSWORD="${POSTGRES_PASSWORD}"
-export PGDATABASE="${POSTGRES_DB}"
-
+export PGHOST="${POSTGRES_HOST:-db}"
+export PGPORT="${POSTGRES_PORT:-5432}"
+export PGUSER="${POSTGRES_USER:?Need POSTGRES_USER}"
+export PGPASSWORD="${POSTGRES_PASSWORD:?Need POSTGRES_PASSWORD}"
+export PGDATABASE="${POSTGRES_DB:?Need POSTGRES_DB}"
 
 # #CHANGE species name to be used for database, should match kraken result for contamination checking
 export db_name="$POSTGRES_DB"

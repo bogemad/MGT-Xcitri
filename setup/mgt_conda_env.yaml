@@ -2,19 +2,19 @@ name: mgtenv
 channels:
   - conda-forge
   - bioconda
-  - anaconda
   - defaults
 dependencies:
-  - python>=3.10
   - biopython
-  - psycopg2>=2.8
-  - dateparser>=1.1.1
+  - dateparser[version='>=1.1.1']
   - django=4.1.7
-  - requests>=2.27
-  - kma
-  - pyparsing
-  - pip
   - geopy
+  - kma
+  - pip
+  - psutil
+  - psycopg2[version='>=2.8']
+  - pyparsing
+  - python[version='>=3.10']
+  - requests[version='>=2.27']
   - sistr_cmd
   - pip:
     - django-countries

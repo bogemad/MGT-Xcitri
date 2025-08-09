@@ -44,6 +44,9 @@ services:
         # Conda init  
         . /opt/conda/etc/profile.d/conda.sh  
         conda activate mgtenv
+        #run cron pipeline
+        cd /app/Mgt/Mgt/Scripts
+        python cron_pipeline.py -s Xcitri -d Xcitri --allele_to_db --local
         # Finally start the server
         cd /app/Mgt/Mgt
         python manage.py runserver 0.0.0.0:8000 --settings Mgt.settings_template

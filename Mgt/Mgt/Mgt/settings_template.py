@@ -184,13 +184,13 @@ MEDIA_ROOT = '../../MGT-Xcitri/Uploads/'
 BLASTALLELES='../../MGT-Xcitri/species_specific_alleles/'
 
 # ABSOLUTE PATH VERSIONS OF ABOVE
-ABS_SUBDIR_REFERENCES = os.path.join(BASE_DIR, 'References')
-ABS_SUBDIR_ALLELES = os.path.join(BASE_DIR, 'Alleles')
-ABS_MEDIA_ROOT = os.path.join(BASE_DIR, 'Uploads') 
-ABS_BLASTALLELES= os.path.join(BASE_DIR, 'species_specific_alleles')
+ABS_SUBDIR_REFERENCES = os.path.join(BASE_DIR, 'References/')
+ABS_SUBDIR_ALLELES = os.path.join(BASE_DIR, 'Alleles/')
+ABS_MEDIA_ROOT = os.path.join(BASE_DIR, 'Uploads/')
+ABS_BLASTALLELES= os.path.join(BASE_DIR, 'species_specific_alleles/')
 
-FILES_FOR_DOWNLOAD = os.path.join(BASE_DIR, 'files_for_download')
-TMPFOLDER = os.path.join(BASE_DIR, 'tmp_files')
+FILES_FOR_DOWNLOAD = os.path.join(BASE_DIR, 'files_for_download/')
+TMPFOLDER = os.path.join(BASE_DIR, 'tmp_files/')
 
 
 

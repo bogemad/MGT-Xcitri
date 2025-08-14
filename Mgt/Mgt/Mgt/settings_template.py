@@ -178,10 +178,10 @@ SERVER_EMAIL = os.getenv("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
 
 #RELATIVE PATHS FROM folder containing manage.py in this repo to folder on your system
 # NOTE: Please move the data folders to a secure location once setup is complete.  
-SUBDIR_REFERENCES = '../../References/' 
-SUBDIR_ALLELES = '../../Alleles/' 
-MEDIA_ROOT = '../../Uploads/'
-BLASTALLELES='../../species_specific_alleles/'
+SUBDIR_REFERENCES = '../../Mgt/Mgt/References/' 
+SUBDIR_ALLELES = '../../Mgt/Mgt/Alleles/' 
+MEDIA_ROOT = '../../Mgt/Mgt/Uploads/'
+BLASTALLELES='../../Mgt/Mgt/species_specific_alleles/'
 
 # ABSOLUTE PATH VERSIONS OF ABOVE
 ABS_SUBDIR_REFERENCES = os.path.join(BASE_DIR, 'References/')

@@ -19,9 +19,7 @@ services:
       retries: 5
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAME:-bogemad/mgt-xcitri-web}:latest
     depends_on:
       db:
         condition: service_healthy
@@ -46,14 +44,54 @@ services:
         # Conda init  
         . /opt/conda/etc/profile.d/conda.sh  
         conda activate mgtenv
-        #run cron pipeline
-        #cd /app/Mgt/Mgt/Scripts
-        #python cron_pipeline.py -s template -d Xcitri --allele_to_db --local
         # Finally start the server
         cd /app/Mgt/Mgt
         python manage.py runserver 0.0.0.0:8000 --settings Mgt.settings_template
       "
+  
+  kraken-init:
+    image: alpine:3.20
+    profiles: ["tools"]          # only runs when invoked explicitly
+    volumes:
+      - kraken_db:/kraken-db
+    environment:
+      # Kraken 1 MiniKraken (4GB)
+      - KRAKEN_URL=https://ccb.jhu.edu/software/kraken/dl/minikraken_20171019_4GB.tgz
+    entrypoint: ["/bin/sh","-lc"]
+    command: |
+      set -e
+      apk add --no-cache curl tar
+      # If a Kraken1 DB file or a Kraken2 hash exists, assume DB is present
+      if [ -e /kraken-db/database.kdb ] || [ -e /kraken-db/hash.k2d ]; then
+        echo "Kraken DB already present in /kraken-db; skipping download."
+        ls -lah /kraken-db
+        exit 0
+      fi
+      echo "Downloading ${KRAKEN_URL} …"
+      # Extract into /kraken-db (flatten one top-level directory if present)
+      curl -L "${KRAKEN_URL}" | tar -xz -C /kraken-db --strip-components=1
+      echo "Done. Contents:"
+      ls -lah /kraken-db
+  
+  alleles:
+    image: ${IMAGE_NAME:-bogemad/mgt-xcitri-web}:latest
+    profiles: ["tools"]             # only runs when explicitly requested
+    env_file: .env
+    working_dir: /app
+    entrypoint: ["/bin/bash", "/entrypoints/reads2alleles.sh"]
+    environment:
+      - CONDA_ENV=fq2allele
+      - KRAKEN_DB=/kraken-db
+    volumes:
+      - ./scripts/reads2alleles-entrypoint.sh:/entrypoints/reads2alleles.sh:ro
+      - ./data/reads:/data/in
+      - ./data/alleles:/data/out
+      - ./data/tmp:/tmp
+      - kraken_db:/kraken-db
+    user: "${UID:-1000}:${GID:-1000}"
 
 volumes:
   postgres_data:
   init_flag:
+  kraken_db:
+  

@@ -30,6 +30,8 @@ COPY Mgt/Mgt/MGT_processing/Reads2MGTAlleles/fq_to_allele.yml fq_to_allele.yml
 RUN conda env create -n fq2allele -f fq_to_allele.yml && \
     conda clean -afy
 
+COPY setup/mlst /opt/conda/envs/fq2allele/db/pubmlst/xcitri
+
 ####################################
 # 5. Use your conda env for RUNs   #
 ####################################

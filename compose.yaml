@@ -41,8 +41,11 @@ services:
         else
           echo '✅ Skipping DB init (flag exists at ${DB_INIT_FLAG})';
         fi;
-        # Conda init  
+        # Conda and mlst init  
         . /opt/conda/etc/profile.d/conda.sh  
+        conda activate fq2allele
+        mlst-make_blast_db
+        conda deactivate
         conda activate mgtenv
         # Finally start the server
         cd /app/Mgt/Mgt

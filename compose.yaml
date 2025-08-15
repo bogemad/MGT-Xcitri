@@ -46,9 +46,13 @@ services:
         fi;
         # Conda and mlst init  
         . /opt/conda/etc/profile.d/conda.sh  
-        conda activate fq2allele
-        mlst-make_blast_db
-        conda deactivate
+        if [ ! -f \"${DB_INIT_FLAG}\" ]; then
+          conda activate fq2allele
+          mlst-make_blast_db
+          conda deactivate
+        else
+          echo '✅ Skipping mlst init (flag exists at ${DB_INIT_FLAG})';
+        fi;
         conda activate mgtenv
         # Finally start the server
         cd /app/Mgt/Mgt
@@ -61,21 +65,18 @@ services:
     env_file: .env
     volumes:
       - kraken_db:/kraken-db
-    entrypoint: ["/bin/sh","-lc"]
-    command: |
-      set -e
-      apk add --no-cache curl tar
-      # If a Kraken1 DB file or a Kraken2 hash exists, assume DB is present
-      if [ -e /kraken-db/database.kdb ] || [ -e /kraken-db/hash.k2d ]; then
-        echo "Kraken DB already present in /kraken-db; skipping download."
-        ls -lah /kraken-db
-        exit 0
-      fi
-      echo "Downloading ${KRAKEN_URL} …"
-      # Extract into /kraken-db (flatten one top-level directory if present)
-      curl -L "${KRAKEN_URL}" | tar -xz -C /kraken-db --strip-components=1
-      echo "Done. Contents:"
-      ls -lah /kraken-db
+    command:
+      - /bin/sh
+      - -lc
+      - >
+        set -e;
+        apk add --no-cache curl tar ca-certificates;
+        if [ -e /kraken-db/database.kdb ] || [ -e /kraken-db/hash.k2d ]; then
+          echo "Kraken DB already present in /kraken-db; skipping download.";
+          ls -lah /kraken-db; exit 0; fi;
+        echo "Downloading ${KRAKEN_URL} …";
+        curl -L "${KRAKEN_URL}" | tar -xz -C /kraken-db --strip-components=1;
+        echo "Done. Contents:"; ls -lah /kraken-db
   
   alleles:
     image: ${IMAGE_NAME:-bogemad/mgt-xcitri-web}:latest

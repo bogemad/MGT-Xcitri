@@ -36,14 +36,6 @@ services:
     entrypoint: >
       bash -lc "
         set -o allexport; source .env; set +o allexport;
-        #Build server if not done already
-        if [ ! -f \"${DB_INIT_FLAG}\" ]; then
-          echo '⚙️  First‐run: initializing database...';
-          cd setup;
-          bash setup_new_database.ssh Xcitri_inputs.setupPath;
-        else
-          echo '✅ Skipping DB init (flag exists at ${DB_INIT_FLAG})';
-        fi;
         # Conda and mlst init  
         . /opt/conda/etc/profile.d/conda.sh  
         if [ ! -f \"${DB_INIT_FLAG}\" ]; then
@@ -52,6 +44,14 @@ services:
           conda deactivate
         else
           echo '✅ Skipping mlst init (flag exists at ${DB_INIT_FLAG})';
+        fi;
+        #Build server if not done already
+        if [ ! -f \"${DB_INIT_FLAG}\" ]; then
+          echo '⚙️  First‐run: initializing database...';
+          cd setup;
+          bash setup_new_database.ssh Xcitri_inputs.setupPath;
+        else
+          echo '✅ Skipping DB init (flag exists at ${DB_INIT_FLAG})';
         fi;
         conda activate mgtenv
         # Finally start the server

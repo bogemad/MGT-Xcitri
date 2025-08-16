@@ -36,18 +36,12 @@ services:
     entrypoint: >
       bash -lc "
         set -o allexport; source .env; set +o allexport;
-        # Conda and mlst init  
-        . /opt/conda/etc/profile.d/conda.sh  
-        if [ ! -f \"${DB_INIT_FLAG}\" ]; then
-          conda activate fq2allele
-          mlst-make_blast_db
-          conda deactivate
-        else
-          echo '✅ Skipping mlst init (flag exists at ${DB_INIT_FLAG})';
-        fi;
+        # Conda init  
+        . /opt/conda/etc/profile.d/conda.sh 
         #Build server if not done already
         if [ ! -f \"${DB_INIT_FLAG}\" ]; then
           echo '⚙️  First‐run: initializing database...';
+          conda run -n fq2allele mlst-make_blast_db
           cd setup;
           bash setup_new_database.ssh Xcitri_inputs.setupPath;
         else
@@ -79,7 +73,9 @@ services:
         echo "Done. Contents:"; ls -lah /kraken-db
   
   alleles:
-    image: ${IMAGE_NAME:-bogemad/mgt-xcitri-web}:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     profiles: ["tools"]             # only runs when explicitly requested
     env_file: .env
     working_dir: /app
@@ -88,6 +84,7 @@ services:
       - CONDA_ENV=fq2allele
       - KRAKEN_DB=/kraken-db
     volumes:
+      - .:/app
       - ./scripts/reads2alleles-entrypoint.sh:/entrypoints/reads2alleles.sh:ro
       - ./data/reads:/data/in
       - ./data/alleles:/data/out

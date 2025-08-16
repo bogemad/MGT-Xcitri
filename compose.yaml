@@ -41,7 +41,9 @@ services:
         #Build server if not done already
         if [ ! -f \"${DB_INIT_FLAG}\" ]; then
           echo '⚙️  First‐run: initializing database...';
-          conda run -n fq2allele mlst-make_blast_db
+          conda activate fq2allele 
+          mlst-make_blast_db
+          conda deactivate  
           cd setup;
           bash setup_new_database.ssh Xcitri_inputs.setupPath;
         else

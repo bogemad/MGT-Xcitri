@@ -6,7 +6,7 @@
   "description": "PubMLST",
   "number-of-letters": 49379,
   "number-of-sequences": 127,
-  "last-updated": "2025-08-16T13:12:00",
+  "last-updated": "2025-08-16T04:10:00",
   "number-of-volumes": 1,
   "bytes-total": 85314,
   "bytes-to-cache": 14051,

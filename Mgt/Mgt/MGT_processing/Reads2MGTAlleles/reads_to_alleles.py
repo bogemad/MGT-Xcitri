@@ -345,12 +345,12 @@ def run_mlst(ingenome):
     ##### Run 7 gene MLST program #####
 
     mlst_cmd = "mlst --blastdb /mlst/db/blast/mlst.fa --datadir /mlst/db/pubmlst {}".format(ingenome)
-
+    print(mlst_cmd)
     proc2 = subprocess.Popen(mlst_cmd, shell=True, stdout=subprocess.PIPE)
 
     mlst_result = proc2.stdout.read()
     mlst_result = mlst_result.decode('utf8')
-
+    print(mlst_result)
     MGT1ST = mlst_result.split("\t")[2]
 
     return MGT1ST

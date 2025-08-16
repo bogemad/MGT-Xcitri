@@ -41,6 +41,7 @@ services:
         #Build server if not done already
         if [ ! -f \"${DB_INIT_FLAG}\" ]; then
           echo '⚙️  First‐run: initializing database...';
+          mkdir -p data/reads data/assemblies data/alleles data/tmp
           cd setup;
           bash setup_new_database.ssh Xcitri_inputs.setupPath;
         else
@@ -85,9 +86,8 @@ services:
     volumes:
       - ./mlst:/mlst
       - ./scripts/reads2alleles-entrypoint.sh:/entrypoints/reads2alleles.sh:ro
-      - ./data/reads:/data/in
-      - ./data/alleles:/data/out
-      - ./data/tmp:/tmp
+      - ./data:/data
+      - ./species_specific_alleles:/species_specific_alleles
       - kraken_db:/kraken-db
     user: "${UID:-1000}:${GID:-1000}"
 

@@ -83,7 +83,7 @@ services:
       - CONDA_ENV=fq2allele
       - KRAKEN_DB=/kraken-db
     volumes:
-      - .:/app
+      - ./mlst:/mlst
       - ./scripts/reads2alleles-entrypoint.sh:/entrypoints/reads2alleles.sh:ro
       - ./data/reads:/data/in
       - ./data/alleles:/data/out

@@ -344,7 +344,7 @@ def assem_filter(inp, args):
 def run_mlst(ingenome):
     ##### Run 7 gene MLST program #####
 
-    mlst_cmd = "mlst {}".format(ingenome)
+    mlst_cmd = "mlst --blastdb /mlst/db/blast/mlst.fa --datadir /mlst/db/pubmlst {}".format(ingenome)
 
     proc2 = subprocess.Popen(mlst_cmd, shell=True, stdout=subprocess.PIPE)
 

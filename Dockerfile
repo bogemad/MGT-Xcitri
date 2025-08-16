@@ -30,13 +30,6 @@ COPY Mgt/Mgt/MGT_processing/Reads2MGTAlleles/fq_to_allele.yml fq_to_allele.yml
 RUN conda env create -n fq2allele -f fq_to_allele.yml && \
     conda clean -afy
 
-COPY setup/mlst/xcitri /opt/conda/envs/fq2allele/db/pubmlst/
-
-RUN sed -i 's~MLSTDIR="$DIR/../db/pubmlst"~MLSTDIR=/opt/conda/envs/fq2allele/db/pubmlst~g' /opt/conda/envs/fq2allele/bin/mlst-make_blast_db && \
-    sed -i 's~BLASTDIR="$DIR/../db/blast"~BLASTDIR=/opt/conda/envs/fq2allele/db/blast~g' /opt/conda/envs/fq2allele/bin/mlst-make_blast_db && \
-    conda run -n fq2allele mlst-make_blast_db
-
-
 ####################################
 # 5. Use your conda env for RUNs   #
 ####################################

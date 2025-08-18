@@ -344,7 +344,7 @@ def assem_filter(inp, args):
 def run_mlst(ingenome):
     ##### Run 7 gene MLST program #####
 
-    mlst_cmd = "mlst --blastdb /mlst/db/blast/mlst.fa --datadir /mlst/db/pubmlst {}".format(ingenome)
+    mlst_cmd = "mlst {}".format(ingenome)
     print(mlst_cmd)
     proc2 = subprocess.Popen(mlst_cmd, shell=True, stdout=subprocess.PIPE)
 
@@ -1935,7 +1935,7 @@ if __name__ == "__main__":
                         default="Xanthomonas citri")
     #parser.add_argument("--pathovar", help="estimate pathovar by MLST (OFF by default)", action='store_true')
     parser.add_argument("-y", "--pathovar", help="estimate pathovar by MLST using supplied tsv",
-                        default="setup/mlst_pathovar_key.txt")
+                        default="/mlst/mlst_pathovar_key.txt")
     parser.add_argument("-t", "--threads", help="number of computing threads",
                         default="4")
     parser.add_argument("-m", "--memory", help="memory available in GB",

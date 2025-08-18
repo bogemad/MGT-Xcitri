@@ -1927,10 +1927,10 @@ if __name__ == "__main__":
                         required=True,
                         choices=["reads","genome"])
     parser.add_argument("--refalleles", help="File path to MGT reference allele file. By default sistr results will be used to determine which subfolder within the default folder",
-                        default="/species_specific_files/")
+                        default="/species_specific_alleles/Xcitri_intact_alleles.fasta")
     parser.add_argument("--strainid", help="id for strain to use in output")
-    parser.add_argument("--tmpdir",help="temporary folder")
-    parser.add_argument("-o","--outpath", help="Path to ouput file name,required=True",required=True)
+    parser.add_argument("--tmpdir",help="temporary folder", default="/data/tmp")
+    parser.add_argument("-o","--outpath", help="Path to ouput file name,required=True",default="/data/alleles")
     parser.add_argument("-s", "--species", help="String to find in kraken species confirmation test",
                         default="Xanthomonas citri")
     #parser.add_argument("--pathovar", help="estimate pathovar by MLST (OFF by default)", action='store_true')

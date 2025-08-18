@@ -58,32 +58,39 @@ services:
     env_file: .env
     volumes:
       - kraken_db:/kraken-db
-      - ${KRAKEN_DB_PATH:-/does/not/exist}:/host-kraken-db:ro
+      - ${KRAKEN_DB_PATH:-/__no_host_db_path__}:/host-kraken-db:ro
     command:
       - /bin/sh
       - -lc
       - >
         set -e;
-        apk add --no-cache coreutils findutils curl tar ca-certificates;
+        apk add --no-cache curl tar ca-certificates findutils coreutils;
 
-        # 1. If /kraken-db already has a db, skip
-        if [ -e /kraken-db/database.kdb ] || [ -e /kraken-db/hash.k2d ]; then
-          echo "Kraken DB already present in /kraken-db; skipping.";
-          ls -lah /kraken-db; exit 0;
+        echo "Step 1: Check if /kraken-db already has a Kraken DB";
+        if [ "$(find /kraken-db -maxdepth 1 -type f \( -name 'database.kdb' -o -name 'hash.k2d' \) | wc -l)" -gt 0 ]; then
+          echo "Detected existing Kraken DB in /kraken-db — skipping populate.";
+          ls -lah /kraken-db;
+          exit 0;
         fi;
 
-        # 2. If host-mounted KRAKEN_DB_PATH has a db, copy it
-        if [ -d /host-kraken-db ] && \
-           ( [ -e /host-kraken-db/database.kdb ] || [ -e /host-kraken-db/hash.k2d ] ); then
-          echo "Copying Kraken DB from host path ${KRAKEN_DB_PATH}";
-          cp -r /host-kraken-db/* /kraken-db/;
-          ls -lah /kraken-db; exit 0;
+        echo "Step 2: Check if host-mounted path has a Kraken DB";
+        if [ -d /host-kraken-db ] && [ "$(find /host-kraken-db -maxdepth 1 -type f \( -name 'database.kdb' -o -name 'hash.k2d' \) | wc -l)" -gt 0 ]; then
+          echo "Copying Kraken DB from host path: ${KRAKEN_DB_PATH:-<unset>}";
+          cp -a /host-kraken-db/. /kraken-db/;
+          ls -lah /kraken-db;
+          exit 0;
         fi;
 
-        # 3. Otherwise, download from URL
+        echo "Step 3: No local DB — attempt download from KRAKEN_URL";
+        if [ -z "${KRAKEN_URL:-}" ]; then
+          echo "ERROR: KRAKEN_URL is empty and no local DB found. Exiting." >&2;
+          exit 1;
+        fi;
+
         echo "Downloading ${KRAKEN_URL} …";
-        curl -L "${KRAKEN_URL}" | tar -xz -C /kraken-db --strip-components=1;
-        echo "Done. Contents:"; ls -lah /kraken-db
+        curl -fsSL "${KRAKEN_URL}" | tar -xz -C /kraken-db --strip-components=1;
+        echo "Download complete. /kraken-db contents:";
+        ls -lah /kraken-db;
   
   alleles:
     build:

@@ -94,9 +94,9 @@ def main(args):
             strainid = raw_assembly_out.split("/")[-1]
             args.strainid = re.sub('.(fasta|fna|fa)', '', strainid)
 
-    query_genome, strainid, mgt1st, pathovar = post_assembly_qc(args.strainid,raw_assembly_out,args)
+    query_genome, strainid, mgt1st, serotype = post_assembly_qc(args.strainid,raw_assembly_out,args)
 
-    genome_to_alleles(query_genome, args.strainid, args, mgt1st, pathovar)
+    genome_to_alleles(query_genome, args.strainid, args, mgt1st, serotype)
 
 
 
@@ -208,7 +208,7 @@ def post_assembly_qc(strain,raw_assembly_out,args):
     contam = basename + "/" + strain + "_failure_reason.txt"
 
     assembly_fail = basename + "/" + strain + "_fail_assembly.fa"
-    pathovar_fail = basename + "/" + strain + "_fail_pathovar.fa"
+    serovar_fail = basename + "/" + strain + "_fail_serovar.fa"
     skesa_pass = basename + "/" + strain + "_pass.fasta"
     sistr_out = basename + "/" + strain + "_sistr.csv"
     assembly_stats = basename + "/" + strain + "_assembly_stats.txt"
@@ -227,7 +227,7 @@ def post_assembly_qc(strain,raw_assembly_out,args):
     ##### Run 7 gene MLST program #####
 
     MGT1ST = run_mlst(raw_assembly_out)
-    pathovar = id_pathovar(MGT1ST, args.pathovar)
+    serotype = id_pathovar(MGT1ST, args.pathovar)
 
     shutil.copy(raw_assembly_out, skesa_pass)  # if no sys.exit by this point then genome has passed filters
 
@@ -235,10 +235,10 @@ def post_assembly_qc(strain,raw_assembly_out,args):
 
     print("Assembly QC completed in: ", elapsed_time)
 
-    return skesa_pass, strain, MGT1ST, pathovar
+    return skesa_pass, strain, MGT1ST, serotype
 
 
-def import_pathvar_key(pathovar_key):
+def import_pathovar_key(pathovar_key):
     pvd = {}
     with open(pathovar_key) as pv_key:
         for line in pv_key:
@@ -247,7 +247,7 @@ def import_pathvar_key(pathovar_key):
     return pvd
 
 def id_pathovar(MGT1ST, pathovar_key):
-    pvd = import_pathvar_key(pathovar_key)
+    pvd = import_pathovar_key(pathovar_key)
     try:
         return pvd[MGT1ST]
     except KeyError:
@@ -504,7 +504,7 @@ def run_sistr(args, rename_skesa, strain, sistr_out, contam, serovar_fail):
 ######## ASSEMBLY TO ALLELES ########
 
 
-def genome_to_alleles(query_genome, strain_name, args, mgt1st, pathovar):
+def genome_to_alleles(query_genome, strain_name, args, mgt1st, serotype):
     """
     Takes assembly from assemblypipe and blasts against set of known alleles for all loci
     exact matches to existing alleles are called from perfect blast hits
@@ -596,7 +596,7 @@ def genome_to_alleles(query_genome, strain_name, args, mgt1st, pathovar):
     print("Reconstructed exact matches found: {}\n".format(exacthits))
 
     print("Writing outputs\n")
-    write_outalleles(outfile, reconstructed, alleles_called_ref, uncallable, locus_list, mgt1st, no_hits, pathovar)
+    write_outalleles(outfile, reconstructed, alleles_called_ref, uncallable, locus_list, mgt1st, no_hits, serotype)
 
     elapsed_time = time.time() - start_time
 
@@ -1864,9 +1864,9 @@ def get_sizes_dict(inf):
 
 
 
-def write_outalleles(outpath, reconstructed, ref, uncall, locuslist, mgt1st, no_hits, pathovar):
+def write_outalleles(outpath, reconstructed, ref, uncall, locuslist, mgt1st, no_hits, serotype):
     outf = open(outpath, "w")
-    outf.write(">{}:{}\n\n".format("species_pathovar", pathovar))
+    outf.write(">{}:{}\n\n".format("species_serotype", serotype))
     outf.write(">{}:{}\n\n".format("7_gene_ST", mgt1st))
     call = 0
     new = {}

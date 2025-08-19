@@ -2392,7 +2392,8 @@ def main():
     AllCalls, PosMatches, NewPosAlleles, NewNegAlleles, ZeroCallAlleles, MGT1Call, species_sero, dash_to_nodash, nodash_to_dash = split_in_alleles(
         InputAllelesFile)
 
-
+    print(MGT1Call)
+    print(species_sero)
 
     start_time = time.time()
 
@@ -2433,6 +2434,12 @@ def main():
 
     maxlevel = get_max_scheme(conn, args)
     minlevel = get_min_scheme(conn, args)
+
+    print("maxlevel = " + str(maxlevel))
+    print("minlevel = " + str(minlevel))
+
+    ###if MGT1Call != '4':
+    ###    maxlevel -= 1
 
     odcdiffs = OrderedDict()
     posalleleseqs = {}

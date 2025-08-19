@@ -90,9 +90,9 @@ def run_wrapper(strainid, intype, input_paths, o_arg, cutoffs,
     i_arg = ",".join(str(p) for p in input_paths)
     cmd = [
         str(WRAPPER),
-        "-i", i_arg,
+        "-i", str(i_arg),
         "--intype", intype,
-        "-o", o_arg + "/",
+        "-o", str(o_arg) + "/",
         "--strainid", strainid,
         "--species", cutoffs.get("species", "Xanthomonas citri"),
         "--threads", str(threads),
@@ -110,53 +110,53 @@ def run_wrapper(strainid, intype, input_paths, o_arg, cutoffs,
         "--blastident", str(cutoffs["blastident"]),
     ]
     if kraken_db:
-        cmd += ["--kraken_db", kraken_db]
+        cmd += ["--kraken_db", str(kraken_db)]
     if pathovar_key:
-        cmd += ["--pathovar", pathovar_key]
+        cmd += ["--pathovar", str(pathovar_key)]
     if refalleles:
-        cmd += ["--refalleles", refalleles]
+        cmd += ["--refalleles", str(refalleles)]
     if min_largest_contig:
-        cmd += ["--min_largest_contig", min_largest_contig]
+        cmd += ["--min_largest_contig", str(min_largest_contig)]
     else:
         cmd += ["--min_largest_contig", str(cutoffs["min_largest_contig"])]
     if max_contig_no:
-        cmd += ["--max_contig_no", max_contig_no]
+        cmd += ["--max_contig_no", str(max_contig_no)]
     else:
         cmd += ["--max_contig_no", str(cutoffs["max_contig_no"])]
     if genome_min:
-        cmd += ["--genome_min", genome_min]
+        cmd += ["--genome_min", str(genome_min)]
     else:
         cmd += ["--genome_min", str(cutoffs["genome_min"])]
     if genome_max:
-        cmd += ["--genome_max", genome_max]
+        cmd += ["--genome_max", str(genome_max)]
     else:
         cmd += ["--genome_max", str(cutoffs["genome_max"])]
     if n50_min:
-        cmd += ["--n50_min", n50_min]
+        cmd += ["--n50_min", str(n50_min)]
     else:
         cmd += ["--n50_min", str(cutoffs["n50_min"])]
     if hspident:
-        cmd += ["--hspident", hspident]
+        cmd += ["--hspident", str(hspident)]
     else:
         cmd += ["--hspident", str(cutoffs["hspident"])]
     if locusnlimit:
-        cmd += ["--locusnlimit", locusnlimit]
+        cmd += ["--locusnlimit", str(locusnlimit)]
     else:
         cmd += ["--locusnlimit", str(cutoffs["locusnlimit"])]
     if snpwindow:
-        cmd += ["--snpwindow", snpwindow]
+        cmd += ["--snpwindow", str(snpwindow)]
     else:
         cmd += ["--snpwindow", str(cutoffs["snpwindow"])]
     if densitylim:
-        cmd += ["--densitylim", densitylim]
+        cmd += ["--densitylim", str(densitylim)]
     else:
         cmd += ["--densitylim", str(cutoffs["densitylim"])]
     if refsize:
-        cmd += ["--refsize", refsize]
+        cmd += ["--refsize", str(refsize)]
     else:
         cmd += ["--refsize", str(cutoffs["refsize"])]
     if blastident:
-        cmd += ["--blastident", blastident]
+        cmd += ["--blastident", str(blastident)]
     else:
         cmd += ["--blastident", str(cutoffs["blastident"])]
     if force:

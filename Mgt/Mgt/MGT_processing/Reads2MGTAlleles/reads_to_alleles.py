@@ -1927,7 +1927,7 @@ if __name__ == "__main__":
                         required=True,
                         choices=["reads","genome"])
     parser.add_argument("--refalleles", help="File path to MGT reference allele file. By default sistr results will be used to determine which subfolder within the default folder",
-                        default="/species_specific_alleles/Xcitri_intact_alleles.fasta")
+                        default="species_specific_alleles/Xcitri_intact_alleles.fasta")
     parser.add_argument("--strainid", help="id for strain to use in output")
     parser.add_argument("--tmpdir",help="temporary folder", default="/data/tmp")
     parser.add_argument("-o","--outpath", help="Path to ouput file name,required=True",default="/data/alleles")
@@ -1935,7 +1935,7 @@ if __name__ == "__main__":
                         default="Xanthomonas citri")
     #parser.add_argument("--pathovar", help="estimate pathovar by MLST (OFF by default)", action='store_true')
     parser.add_argument("-y", "--pathovar", help="estimate pathovar by MLST using supplied tsv",
-                        default="/mlst/mlst_pathovar_key.txt")
+                        default="mlst/mlst_pathovar_key.txt")
     parser.add_argument("-t", "--threads", help="number of computing threads",
                         default="4")
     parser.add_argument("-m", "--memory", help="memory available in GB",

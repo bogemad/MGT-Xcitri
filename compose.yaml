@@ -104,11 +104,7 @@ services:
       - CONDA_ENV=fq2allele
       - KRAKEN_DB=/kraken-db
     volumes:
-      - ./mlst:/mlst
       - ./scripts/reads2alleles-entrypoint.sh:/entrypoints/reads2alleles.sh:ro
-      - ./data:/data
-      - ./species_specific_alleles:/species_specific_alleles
-      - ./Mgt/Mgt/Mgt:/settings
       - kraken_db:/kraken-db
     user: "${UID:-1000}:${GID:-1000}"
 

@@ -28,7 +28,10 @@ import shutil
 import subprocess
 import sys
 import ast
+import json
 from pathlib import Path
+import importlib.util
+
 
 REPO_BASE = Path(__file__).resolve().parents[1]
 DETAILS_FILE = REPO_BASE / "data" / "allele_file_details"
@@ -37,6 +40,7 @@ SETTINGS = REPO_BASE / "Mgt" / "Mgt" / "Mgt" / "settings_template.py"
 REF_ALLELES = REPO_BASE / "species_specific_alleles" / "Xcitri_intact_alleles.fasta"
 ALLELES_DIR = REPO_BASE / "data" / "alleles"
 PATHOVAR_KEY = REPO_BASE / "mlst" / "mlst_pathovar_key.txt"
+SPECIES_JSON = REPO_BASE / "Mgt" / "Mgt" / "MGT_processing" / "Reads2MGTAlleles" / "rtoa_defaults.json"
 
 FASTQ = {".fastq", ".fq"}
 FASTA = {".fasta", ".fa", ".fna"}
@@ -55,15 +59,17 @@ def infer_intype(paths):
             return "reads"
     return "reads" if len(paths) == 2 else "genome"
 
-def parse_species_cutoffs(settings_path: Path, species_key: str) -> dict:
-    txt = settings_path.read_text(encoding="utf-8")
-    m = re.search(r"SPECIES_SEROVAR\s*=\s*(\{.*?\})\s*\n", txt, re.DOTALL)
-    if not m:
-        raise RuntimeError(f"Could not locate SPECIES_SEROVAR in {settings_path}")
-    spec = ast.literal_eval(m.group(1))
-    if species_key not in spec:
-        raise KeyError(f"Species key '{species_key}' not found; available: {list(spec.keys())}")
-    return spec[species_key]
+def load_species_cutoffs_json(json_path: Path, species_key: str) -> dict:
+    if not json_path.exists():
+        raise FileNotFoundError(
+            f"Missing species cutoffs JSON: {json_path}\n"
+            "Run the container setup step that exports SPECIES_SEROVAR to JSON."
+        )
+    with json_path.open("r", encoding="utf-8") as fh:
+        data = json.load(fh)
+    if species_key not in data:
+        raise KeyError(f"Species key '{species_key}' not found; available: {list(data.keys())}")
+    return data[species_key]
 
 def read_details(path: Path):
     with path.open("r", encoding="utf-8") as fh:
@@ -79,13 +85,13 @@ def ensure_paths():
     ALLELES_DIR.mkdir(parents=True, exist_ok=True)
 
 def run_wrapper(strainid, intype, input_paths, o_arg, cutoffs,
-                threads, memory, kraken_db, force, pathovar_key, dry_run):
+                threads, memory, kraken_db, force, pathovar_key, refalleles, dry_run,
+                min_largest_contig, max_contig_no, genome_min, genome_max, n50_min, hspident, locusnlimit, snpwindow, densitylim, refsize, blastident):
     i_arg = ",".join(str(p) for p in input_paths)
     cmd = [
         str(WRAPPER),
         "-i", i_arg,
         "--intype", intype,
-        "--refalleles", str(REF_ALLELES),
         "-o", o_arg + "/",
         "--strainid", strainid,
         "--species", cutoffs.get("species", "Xanthomonas citri"),
@@ -107,6 +113,52 @@ def run_wrapper(strainid, intype, input_paths, o_arg, cutoffs,
         cmd += ["--kraken_db", kraken_db]
     if pathovar_key:
         cmd += ["--pathovar", pathovar_key]
+    if refalleles:
+        cmd += ["--refalleles", refalleles]
+    if min_largest_contig:
+        cmd += ["--min_largest_contig", min_largest_contig]
+    else:
+        cmd += ["--min_largest_contig", str(cutoffs["min_largest_contig"])]
+    if max_contig_no:
+        cmd += ["--max_contig_no", max_contig_no]
+    else:
+        cmd += ["--max_contig_no", str(cutoffs["max_contig_no"])]
+    if genome_min:
+        cmd += ["--genome_min", genome_min]
+    else:
+        cmd += ["--genome_min", str(cutoffs["genome_min"])]
+    if genome_max:
+        cmd += ["--genome_max", genome_max]
+    else:
+        cmd += ["--genome_max", str(cutoffs["genome_max"])]
+    if n50_min:
+        cmd += ["--n50_min", n50_min]
+    else:
+        cmd += ["--n50_min", str(cutoffs["n50_min"])]
+    if hspident:
+        cmd += ["--hspident", hspident]
+    else:
+        cmd += ["--hspident", str(cutoffs["hspident"])]
+    if locusnlimit:
+        cmd += ["--locusnlimit", locusnlimit]
+    else:
+        cmd += ["--locusnlimit", str(cutoffs["locusnlimit"])]
+    if snpwindow:
+        cmd += ["--snpwindow", snpwindow]
+    else:
+        cmd += ["--snpwindow", str(cutoffs["snpwindow"])]
+    if densitylim:
+        cmd += ["--densitylim", densitylim]
+    else:
+        cmd += ["--densitylim", str(cutoffs["densitylim"])]
+    if refsize:
+        cmd += ["--refsize", refsize]
+    else:
+        cmd += ["--refsize", str(cutoffs["refsize"])]
+    if blastident:
+        cmd += ["--blastident", blastident]
+    else:
+        cmd += ["--blastident", str(cutoffs["blastident"])]
     if force:
         cmd += ["--force"]
 
@@ -120,23 +172,55 @@ def main():
         description="Batch executor for Reads2MGTAlleles",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    ap.add_argument("--details_file", type=Path, default=DETAILS_FILE)
+    ap.add_argument("--details_file", type=Path, help="Tab-delimied text file with Strain ID (first column) and Input data filename (second column; reads or assemblies). For paired reads please provide both filenames separated by a comma (e.g. reads_1.fastq.gz,reads_2.fastq.gz).", default=DETAILS_FILE)
     ap.add_argument("--source_dir", type=Path, required=True,
                     help="Directory containing the files referenced in details_file")
     ap.add_argument("--out_dir", type=Path, required=True,
                     help="Output directory for allele files")
-    ap.add_argument("--settings_file", type=Path, default=SETTINGS)
-    ap.add_argument("--species_key", default="Xcitri")
     ap.add_argument("--threads", type=int, default=4)
     ap.add_argument("--memory", type=int, default=8)
     ap.add_argument("--kraken_db", default=None)
-    ap.add_argument("--pathovar_key", default=PATHOVAR_KEY, help=f"Text file translating MLST result to phylogenetic-associated pathovar. Default {PATHOVAR_KEY}")
+    ap.add_argument("--pathovar_key", default=PATHOVAR_KEY, help=f"Text file translating MLST result to phylogenetic-associated pathovar.")
+    ap.add_argument("--refalleles", default=REF_ALLELES, help=f"File path to MGT reference allele file.")
+    ap.add_argument("--min_largest_contig",
+                        help="Assembly quality filter: minimum allowable length of the largest contig in the assembly in bp",
+                        type=int)
+    ap.add_argument("--max_contig_no",
+                        help="Assembly quality filter: maximum allowable number of contigs allowed for assembly",
+                        type=int)
+    ap.add_argument("--genome_min",
+                        help="Assembly quality filter: minimum allowable total assembly length in bp",
+                        type=int)
+    ap.add_argument("--genome_max",
+                        help="Assembly quality filter: maximum allowable total assembly length in bp",
+                        type=int)
+    ap.add_argument("--n50_min",
+                        help="Assembly quality filter: minimum allowable n50 value in bp (default for salmonella)",
+                        type=int)
+    ap.add_argument("--hspident",
+                        help="BLAST percentage identity needed for hsp to be returned",
+                        type=float)
+    ap.add_argument("--locusnlimit",
+                        help="minimum proportion of the locus length that must be present (not masked with Ns)",
+                        type=float)
+    ap.add_argument("--snpwindow",
+                        help="Size of sliding window to screen for overly dense SNPs",
+                        type=int)
+    ap.add_argument("--densitylim",
+                        help="maximum number of SNPs allowed to be present in window before window is masked",
+                        type=int)
+    ap.add_argument("--refsize",
+                        help="Approx size of genome for shovill input in megabases i.e. 5.0 or 2.9",type=float,
+                        )
+    ap.add_argument("--blastident",
+                        help="BLAST percentage identity needed for hsp to be returned",
+                        type=int)
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--dry_run", action="store_true")
     args = ap.parse_args()
 
     ensure_paths()
-    cutoffs = parse_species_cutoffs(args.settings_file, args.species_key)
+    cutoffs = load_species_cutoffs_json(SPECIES_JSON, "Xcitri")
 
     failures = 0
     for strainid, file_list in read_details(args.details_file):
@@ -157,7 +241,8 @@ def main():
 
             rc = run_wrapper(strainid, intype, src_files, args.out_dir, cutoffs,
                              args.threads, args.memory, args.kraken_db,
-                             args.force, args.pathovar_key, args.dry_run)
+                             args.force, args.pathovar_key, args.refalleles, args.dry_run, 
+                             args.min_largest_contig, args.max_contig_no, args.genome_min, args.genome_max, args.n50_min, args.hspident, args.locusnlimit, args.snpwindow, args.densitylim, args.refsize, args.blastident)
             if rc != 0:
                 raise RuntimeError(f"reads_to_alleles failed (exit {rc})")
 

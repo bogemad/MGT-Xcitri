@@ -15,7 +15,10 @@ cd MGT-Xcitri
 # 2) Copy & edit your env file
 cp example.env .env
 
-# 3) Build & start the stack
+# 3) Build the kraken database
+docker compose run --rm kraken-init
+
+# 4) Build & start the stack
 docker compose up
 
 #OR run in detached mode (no console output)

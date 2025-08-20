@@ -9,7 +9,7 @@ dependencies:
   - assembly-stats=1.0.1
   - mlst
   - kraken=1.1
-  - biopython=1.72
+  - biopython
   - mafft=7.407
   - pip:
     - sistr_cmd

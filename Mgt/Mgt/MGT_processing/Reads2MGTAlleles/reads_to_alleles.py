@@ -218,15 +218,16 @@ def post_assembly_qc(strain,raw_assembly_out,args):
     run_assembly_stats(raw_assembly_out, contam, assembly_fail, strain, assembly_stats)
 
     ##### Run SISTR serotyping #####
-    serotype = ""
-    if args.serotyping:
-        serotype = run_sistr(args, raw_assembly_out, strain, sistr_out, contam, serovar_fail)
-    else:
-        serotype = args.species
+    #serotype = ""
+    #if args.serotyping:
+    #    serotype = run_sistr(args, raw_assembly_out, strain, sistr_out, contam, serovar_fail)
+    #else:
+    #    serotype = args.species
 
     ##### Run 7 gene MLST program #####
 
     MGT1ST = run_mlst(raw_assembly_out)
+    serotype = id_pathovar(MGT1ST, args.pathovar)
 
     shutil.copy(raw_assembly_out, skesa_pass)  # if no sys.exit by this point then genome has passed filters
 
@@ -237,6 +238,20 @@ def post_assembly_qc(strain,raw_assembly_out,args):
     return skesa_pass, strain, MGT1ST, serotype
 
 
+def import_pathovar_key(pathovar_key):
+    pvd = {}
+    with open(pathovar_key) as pv_key:
+        for line in pv_key:
+            data = line.strip().split()
+            pvd[data[0]] = data[1]
+    return pvd
+
+def id_pathovar(MGT1ST, pathovar_key):
+    pvd = import_pathovar_key(pathovar_key)
+    try:
+        return pvd[MGT1ST]
+    except KeyError:
+        return "Unclassified"
 
 def check_kraken(krakenout, target_species):
     """
@@ -330,12 +345,12 @@ def run_mlst(ingenome):
     ##### Run 7 gene MLST program #####
 
     mlst_cmd = "mlst {}".format(ingenome)
-
+    print(mlst_cmd)
     proc2 = subprocess.Popen(mlst_cmd, shell=True, stdout=subprocess.PIPE)
 
     mlst_result = proc2.stdout.read()
     mlst_result = mlst_result.decode('utf8')
-
+    print(mlst_result)
     MGT1ST = mlst_result.split("\t")[2]
 
     return MGT1ST
@@ -1911,16 +1926,16 @@ if __name__ == "__main__":
                         help="select input type from either reads (illumina paired end reads) for genome (assembled genome in fasta format)",
                         required=True,
                         choices=["reads","genome"])
-    parser.add_argument("--refalleles", help="File path to MGT reference allele file. By default sistr results will be used to determine which subfolder within the default folder",
-                        default="/species_specific_files/")
+    parser.add_argument("--refalleles", help="File path to MGT reference allele file.",
+                        default="./species_specific_alleles/Xcitri_intact_alleles.fasta")
     parser.add_argument("--strainid", help="id for strain to use in output")
     parser.add_argument("--tmpdir",help="temporary folder")
-    parser.add_argument("-o","--outpath", help="Path to ouput file name,required=True",required=True)
+    parser.add_argument("-o","--outpath", help="Path to ouput file name required=True",required=True)
     parser.add_argument("-s", "--species", help="String to find in kraken species confirmation test",
-                        default="Salmonella enterica")
-    parser.add_argument("--serotyping", help="run Serotyping of Salmonella using SISTR (OFF by default)", action='store_true')
-    parser.add_argument("-y", "--serotype", help="Serotype to match in SISTR, semicolon separated",
-                        default="Typhimurium;I 4,[5],12:i:-")
+                        default="Xanthomonas citri")
+    #parser.add_argument("--pathovar", help="estimate pathovar by MLST (OFF by default)", action='store_true')
+    parser.add_argument("-y", "--pathovar", help="estimate pathovar by MLST using supplied tsv",
+                        default="./mlst/mlst_pathovar_key.txt")
     parser.add_argument("-t", "--threads", help="number of computing threads",
                         default="4")
     parser.add_argument("-m", "--memory", help="memory available in GB",

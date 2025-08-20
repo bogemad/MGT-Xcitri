@@ -192,7 +192,7 @@ ABS_BLASTALLELES= os.path.join(BASE_DIR, 'species_specific_alleles/')
 FILES_FOR_DOWNLOAD = os.path.join(BASE_DIR, 'files_for_download/')
 TMPFOLDER = os.path.join(BASE_DIR, 'tmp_files/')
 
-
+RTOA_DEFAULTS = os.path.join(BASE_DIR, 'MGT_processing/Reads2MGTAlleles/rtoa_defaults.json')
 
 
 ASCPKEY = "/Path/to/.aspera/connect/etc/asperaweb_id_dsa.openssh"#CHANGE ONLY NEEDED IF RUNNING cron_pipeline --dl_reads

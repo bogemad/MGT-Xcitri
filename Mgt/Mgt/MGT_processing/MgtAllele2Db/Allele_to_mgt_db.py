@@ -2212,7 +2212,7 @@ def update_status(newstatus, args, conn, ids, field, idtype):
     cur.close()
 
 
-def write_finalout(isolate_info, stresults, no_tables, conn, view_update, MGT1Call, input_acc,all_assignments, args):
+def write_finalout(isolate_info, stresults, no_tables, conn, view_update, MGT1Call, input_acc,all_assignments, args, pathovar):
     """
     Update of database with isolate information and mgt object - link mgt data to isolate
     :param isolate_info: isolate metadata
@@ -2234,6 +2234,7 @@ def write_finalout(isolate_info, stresults, no_tables, conn, view_update, MGT1Ca
             update_status(MGT1Call, args, conn, [input_acc], "mgt1", "id")
         else:
             update_status(0, args, conn, [input_acc], "mgt1", "id")
+        update_status(pathovar, args, conn, [input_acc], "serovar", "id")
 
     if args.appname == "Vibrio":
         if "VC2210" in all_assignments:
@@ -2392,13 +2393,14 @@ def main():
     AllCalls, PosMatches, NewPosAlleles, NewNegAlleles, ZeroCallAlleles, MGT1Call, species_sero, dash_to_nodash, nodash_to_dash = split_in_alleles(
         InputAllelesFile)
 
-
+    print(MGT1Call)
+    print(species_sero)
 
     start_time = time.time()
 
 
 
-    print(StrainName)
+    print(str(InputAllelesFile).split("/")[-1].replace("_alleles.fasta", ""))
     args.strainname = str(StrainName)
     #TODO make this more simple
     # if species_sero not in serotype_d:
@@ -2433,6 +2435,15 @@ def main():
 
     maxlevel = get_max_scheme(conn, args)
     minlevel = get_min_scheme(conn, args)
+
+    print("maxlevel = " + str(maxlevel))
+    print("minlevel = " + str(minlevel))
+
+    ###if MGT1Call != '4':
+    ###    maxlevel -= 1
+
+    print("maxlevel = " + str(maxlevel))
+    print("minlevel = " + str(minlevel))
 
     odcdiffs = OrderedDict()
     posalleleseqs = {}
@@ -2648,7 +2659,7 @@ def main():
 
     # Write isolate information and generate MGT object (if needed) - link MGT to isolate
 
-    write_finalout(isolate_info, st_results, no_tables, conn, view_update_command_path, MGT1Call, input_id,all_assignments, args)
+    write_finalout(isolate_info, st_results, no_tables, conn, view_update_command_path, MGT1Call, input_id,all_assignments, args, species_sero)
 
     print("Total time: ", (" --- %s seconds ---" % (time.time() - start_time)))
 

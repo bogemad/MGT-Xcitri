@@ -1,6 +1,7 @@
 import os
 import shutil
 import sys
+import json
 from time import sleep as sl
 from Bio import SeqIO,Seq, SeqRecord
 from os import path
@@ -438,6 +439,11 @@ def make_db_folders(settings,args):
         if not os.path.exists(folder):
             print("created folder: {}".format(folder))
             os.mkdir(folder)
+    with open(settings.RTOA_DEFAULTS, 'w') as fh:
+        json.dump(settings.SPECIES_SEROVAR, fh, indent=2, sort_keys=True)
+        fh.write("\n")
+    
+
 def main():
     args = parseargs()
     settings=load_settings(args)

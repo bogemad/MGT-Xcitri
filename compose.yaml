@@ -19,9 +19,10 @@ services:
       retries: 5
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAME:-bogemad/mgt-xcitri-web}:latest
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -35,6 +36,8 @@ services:
     entrypoint: >
       bash -lc "
         set -o allexport; source .env; set +o allexport;
+        # Conda init  
+        . /opt/conda/etc/profile.d/conda.sh 
         #Build server if not done already
         if [ ! -f \"${DB_INIT_FLAG}\" ]; then
           echo '⚙️  First‐run: initializing database...';
@@ -43,17 +46,71 @@ services:
         else
           echo '✅ Skipping DB init (flag exists at ${DB_INIT_FLAG})';
         fi;
-        # Conda init  
-        . /opt/conda/etc/profile.d/conda.sh  
         conda activate mgtenv
-        #run cron pipeline
-        #cd /app/Mgt/Mgt/Scripts
-        #python cron_pipeline.py -s template -d Xcitri --allele_to_db --local
         # Finally start the server
         cd /app/Mgt/Mgt
         python manage.py runserver 0.0.0.0:8000 --settings Mgt.settings_template
       "
+  
+  kraken-init:
+    image: alpine:3.20
+    profiles: ["tools"]          # only runs when invoked explicitly
+    env_file: .env
+    volumes:
+      - kraken_db:/kraken-db
+      - ${KRAKEN_DB_PATH:-/__no_host_db_path__}:/host-kraken-db:ro
+    command:
+      - /bin/sh
+      - -lc
+      - >
+        set -e;
+        apk add --no-cache curl tar ca-certificates findutils coreutils;
+
+        echo "Step 1: Check if /kraken-db already has a Kraken DB";
+        if [ "$(find /kraken-db -maxdepth 1 -type f \( -name 'database.kdb' -o -name 'hash.k2d' \) | wc -l)" -gt 0 ]; then
+          echo "Detected existing Kraken DB in /kraken-db — skipping populate.";
+          ls -lah /kraken-db;
+          exit 0;
+        fi;
+
+        echo "Step 2: Check if host-mounted path has a Kraken DB";
+        if [ -d /host-kraken-db ] && [ "$(find /host-kraken-db -maxdepth 1 -type f \( -name 'database.kdb' -o -name 'hash.k2d' \) | wc -l)" -gt 0 ]; then
+          echo "Copying Kraken DB from host path: ${KRAKEN_DB_PATH:-<unset>}";
+          cp -a /host-kraken-db/. /kraken-db/;
+          ls -lah /kraken-db;
+          exit 0;
+        fi;
+
+        echo "Step 3: No local DB — attempt download from KRAKEN_URL";
+        if [ -z "${KRAKEN_URL:-}" ]; then
+          echo "ERROR: KRAKEN_URL is empty and no local DB found. Exiting." >&2;
+          exit 1;
+        fi;
+
+        echo "Downloading ${KRAKEN_URL} …";
+        curl -fsSL "${KRAKEN_URL}" | tar -xz -C /kraken-db --strip-components=1;
+        echo "Download complete. /kraken-db contents:";
+        ls -lah /kraken-db;
+  
+  alleles:
+    image: ${IMAGE_NAME:-bogemad/mgt-xcitri-web}:latest
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
+    profiles: ["tools"]             # only runs when explicitly requested
+    env_file: .env
+    working_dir: /app
+    entrypoint: ["/bin/bash", "/entrypoints/reads2alleles.sh"]
+    environment:
+      - CONDA_ENV=fq2allele
+      - KRAKEN_DB=/kraken-db
+    volumes:
+      - ./scripts/reads2alleles-entrypoint.sh:/entrypoints/reads2alleles.sh:ro
+      - kraken_db:/kraken-db
+    user: "${UID:-1000}:${GID:-1000}"
 
 volumes:
   postgres_data:
   init_flag:
+  kraken_db:
+  

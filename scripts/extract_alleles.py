@@ -5,13 +5,12 @@ extract_alleles.py
 Batch driver for running Reads2MGTAlleles through the Docker wrapper
 (./scripts/reads_to_alleles.py) with auto-mount detection.
 
-It reads ./data/allele_file_details (TSV with: strainid <tab> files) and
+It reads allele_file_details.tsv (TSV with: strainid <tab> files) and
 runs the pipeline for each sample. Input files are expected to exist
 on the host filesystem; the wrapper will detect and mount their parent
 directories automatically.
 
-Outputs are written into ./data/alleles inside the repo, and finally
-moved into --out_dir for manual upload.
+Outputs are written into --out_dir.
 
 Example:
   ./scripts/extract_alleles.py \
@@ -74,6 +73,8 @@ def load_species_cutoffs_json(json_path: Path, species_key: str) -> dict:
 def read_details(path: Path):
     with path.open("r", encoding="utf-8") as fh:
         for row in csv.reader(fh, delimiter="\t"):
+            if row[0].startswith('#'):
+                continue
             if not row or len(row) < 2:
                 continue
             sid = row[0].strip()

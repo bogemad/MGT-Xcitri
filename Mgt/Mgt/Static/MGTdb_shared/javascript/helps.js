@@ -261,7 +261,7 @@ function helpFilterIsolates(){
 		<li> <b> Isolate </b>
 			<ol>
 				<li> <i> Isolate </i> The isolate name, e.g. "SRR" or "SRR5642043". A substring match is performed. If you are logged in, any private isolates  in your projects matching the pattern are appended to search results. </li> 
-				<li> <i> Serovar </i> When present, the typhimurium serovar. A few isolates belonging to different serovars may be found in the <i> Salmonella </i> databases. </li> 
+				<li> <i> Phylo-pathovar </i> When present, the <i> X. citri </i> pathovar estimated by MLST. See Okoh et al. (2024) Phytopathology 114(7):1480-1489 for further details. </li> 
 				<li> <i> Server status </i> The status in the processing pipeline of the MGT server. To restrict search to isolates which have finished processing, search for 'Complete'. </li> 
 				<li> <i> Assignment status </i> MGT assignment status. To restrict search to isolates which were assigned an MGT, search for 'Assigned MGT'. </li>
 				<li> <i> MGT1 </i> MGT1 is also known as the 7 gene MLST. </li>

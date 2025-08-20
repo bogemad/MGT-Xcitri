@@ -71,9 +71,9 @@ MgtColsPv = [{ 'mgtId': 8,
 
 ProjHeaderPv = [{"table_name": "project", "display_name": "Project", "db_col": 4}]
 
-IsolateHeaderPu = [{"table_name": "identifier", "display_name": "Isolate", "db_col": 1}, {"table_name": "server_status", "display_name": "Server status", "db_col": 2}, {"table_name": "assignment_status", "display_name": "Assignment status", "db_col": 3}, {"table_name": "serovar", "display_name": "Serovar", "db_col":4}, {"table_name": "mgt1", "display_name": "MGT1-ST", "db_col":5}]
+IsolateHeaderPu = [{"table_name": "identifier", "display_name": "Isolate", "db_col": 1}, {"table_name": "server_status", "display_name": "Server status", "db_col": 2}, {"table_name": "assignment_status", "display_name": "Assignment status", "db_col": 3}, {"table_name": "serovar", "display_name": "Phylo-pathovar", "db_col":4}, {"table_name": "mgt1", "display_name": "MGT1-ST", "db_col":5}]
 
-IsolateHeaderPv = [{"table_name": "identifier", "display_name": "Isolate", "db_col": 1}, {"table_name": "server_status", "display_name": "Server status", "db_col": 2}, {"table_name": "assignment_status", "display_name": "Assignment status", "db_col": 3}, {"table_name": "project", "display_name": "Project", "db_col": 4}, {"table_name": "privacy_status", "display_name": "Privacy", "db_col": 5}, {"table_name": "serovar", "display_name": "Serovar", "db_col":6}, {"table_name": "mgt1", "display_name": "MGT1-ST", "db_col":7}]
+IsolateHeaderPv = [{"table_name": "identifier", "display_name": "Isolate", "db_col": 1}, {"table_name": "server_status", "display_name": "Server status", "db_col": 2}, {"table_name": "assignment_status", "display_name": "Assignment status", "db_col": 3}, {"table_name": "project", "display_name": "Project", "db_col": 4}, {"table_name": "privacy_status", "display_name": "Privacy", "db_col": 5}, {"table_name": "serovar", "display_name": "Phylo-pathovar", "db_col":6}, {"table_name": "mgt1", "display_name": "MGT1-ST", "db_col":7}]
 
 # , {"table_name": "privacy_status", "display_name": "Privacy status"}
 

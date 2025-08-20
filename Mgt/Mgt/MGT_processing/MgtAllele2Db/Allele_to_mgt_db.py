@@ -2439,8 +2439,8 @@ def main():
     print("maxlevel = " + str(maxlevel))
     print("minlevel = " + str(minlevel))
 
-    if MGT1Call != '4':
-        maxlevel -= 1
+    ###if MGT1Call != '4':
+    ###    maxlevel -= 1
 
     print("maxlevel = " + str(maxlevel))
     print("minlevel = " + str(minlevel))
@@ -2659,7 +2659,7 @@ def main():
 
     # Write isolate information and generate MGT object (if needed) - link MGT to isolate
 
-    write_finalout(isolate_info, st_results, no_tables, conn, view_update_command_path, MGT1Call, input_id,all_assignments, args)
+    write_finalout(isolate_info, st_results, no_tables, conn, view_update_command_path, MGT1Call, input_id,all_assignments, args, species_sero)
 
     print("Total time: ", (" --- %s seconds ---" % (time.time() - start_time)))
 

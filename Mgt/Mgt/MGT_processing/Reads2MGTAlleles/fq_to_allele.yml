@@ -5,7 +5,7 @@ channels:
   - defaults
 dependencies:
   - python
-  - shovill
+#  - shovill
   - assembly-stats
   - mlst
   - kraken=1.1

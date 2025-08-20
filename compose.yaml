@@ -19,10 +19,10 @@ services:
       retries: 5
 
   web:
-    #image: ${IMAGE_NAME:-bogemad/mgt-xcitri-web}:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAME:-bogemad/mgt-xcitri-web}:latest
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -93,9 +93,10 @@ services:
         ls -lah /kraken-db;
   
   alleles:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAME:-bogemad/mgt-xcitri-web}:latest
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
     profiles: ["tools"]             # only runs when explicitly requested
     env_file: .env
     working_dir: /app

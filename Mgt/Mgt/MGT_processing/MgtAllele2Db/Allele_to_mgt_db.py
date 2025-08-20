@@ -2212,7 +2212,7 @@ def update_status(newstatus, args, conn, ids, field, idtype):
     cur.close()
 
 
-def write_finalout(isolate_info, stresults, no_tables, conn, view_update, MGT1Call, input_acc,all_assignments, args):
+def write_finalout(isolate_info, stresults, no_tables, conn, view_update, MGT1Call, input_acc,all_assignments, args, pathovar):
     """
     Update of database with isolate information and mgt object - link mgt data to isolate
     :param isolate_info: isolate metadata
@@ -2234,6 +2234,7 @@ def write_finalout(isolate_info, stresults, no_tables, conn, view_update, MGT1Ca
             update_status(MGT1Call, args, conn, [input_acc], "mgt1", "id")
         else:
             update_status(0, args, conn, [input_acc], "mgt1", "id")
+        update_status(pathovar, args, conn, [input_acc], "serovar", "id")
 
     if args.appname == "Vibrio":
         if "VC2210" in all_assignments:
@@ -2399,7 +2400,7 @@ def main():
 
 
 
-    print(StrainName)
+    print(str(InputAllelesFile).split("/")[-1].replace("_alleles.fasta", ""))
     args.strainname = str(StrainName)
     #TODO make this more simple
     # if species_sero not in serotype_d:
@@ -2438,8 +2439,11 @@ def main():
     print("maxlevel = " + str(maxlevel))
     print("minlevel = " + str(minlevel))
 
-    ###if MGT1Call != '4':
-    ###    maxlevel -= 1
+    if MGT1Call != '4':
+        maxlevel -= 1
+
+    print("maxlevel = " + str(maxlevel))
+    print("minlevel = " + str(minlevel))
 
     odcdiffs = OrderedDict()
     posalleleseqs = {}

@@ -1,0 +1,6 @@
+#Allele file details
+#strainid   assembly_or_reads_filename(s)
+#e.g.
+#MN12   MN12.assembled_scaffolds.fasta
+#CFBP7111   CFBP7111.short_single_reads.fq
+#LMG9322    LMG9322.illumina_paired_reads.1.fastq.gz,LMG9322.illumina_paired_reads.2.fastq.gz

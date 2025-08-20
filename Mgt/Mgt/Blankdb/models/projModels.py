@@ -103,7 +103,7 @@ class Isolate(models.Model):
 	identifier = models.CharField(max_length=100, verbose_name='Isolate')
 	# identifier and project together must be unique
 
-	serovar = models.CharField(max_length=50, verbose_name='Serovar', blank=True, null=True)
+	serovar = models.CharField(max_length=50, verbose_name='Phylo-pathovar', blank=True, null=True)
 
 	isQuery = models.BooleanField(verbose_name='Run as query', default=False)
 

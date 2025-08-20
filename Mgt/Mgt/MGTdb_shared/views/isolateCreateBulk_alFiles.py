@@ -56,7 +56,7 @@ def page(request, pk, org):
 
 	# get all isolates which has tmp_filename value.
 
-	IsolColNames = ['Isolate', 'Project name', 'Serovar', 'Privacy status', 'Server status', 'Expected filename', 'Continent', 'Country', 'State', 'Postcode', 'Source', 'Type', 'Host', 'Disease', 'Date', 'Year', 'Month']
+	IsolColNames = ['Isolate', 'Project name', 'Phylo-pathovar', 'Privacy status', 'Server status', 'Expected filename', 'Continent', 'Country', 'State', 'Postcode', 'Source', 'Type', 'Host', 'Disease', 'Date', 'Year', 'Month']
 
 	isolates = Isolate.objects.filter(project=proj).exclude(tmpFn_alleles=None).values('identifier', 'project_id__identifier', 'serovar', 'privacy_status', 'server_status', 'tmpFn_alleles', 'location_id__continent', 'location_id__country', 'location_id__state', 'location_id__postcode', 'isolation_id__source', 'isolation_id__type', 'isolation_id__host', 'isolation_id__disease', 'isolation_id__date', 'isolation_id__year', 'isolation_id__month')
 

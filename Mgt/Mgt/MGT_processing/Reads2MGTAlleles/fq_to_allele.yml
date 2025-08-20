@@ -11,5 +11,8 @@ dependencies:
   - kraken=1.1
   - biopython
   - mafft=7.407
+<<<<<<< HEAD
   - pip:
     - sistr_cmd
+=======
+>>>>>>> eaf5ceef0a8f60f5bce71247c0eef51be573e10a

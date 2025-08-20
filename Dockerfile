@@ -20,11 +20,19 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 ####################################
-# 4. Copy & build your conda env   #
+# 4. Copy & build your conda envs   #
 ####################################
 COPY setup/mgt_conda_env.yaml environment.yml
 RUN conda env create -f environment.yml \
  && conda clean -afy
+
+COPY Mgt/Mgt/MGT_processing/Reads2MGTAlleles/fq_to_allele.yml fq_to_allele.yml
+RUN conda env create -n fq2allele -f fq_to_allele.yml && \
+    conda clean -afy
+
+COPY mlst/xcitri /opt/conda/envs/fq2allele/db/pubmlst/xcitri
+RUN conda run -n fq2allele mlst-make_blast_db
+
 
 ####################################
 # 5. Use your conda env for RUNs   #

@@ -1,21 +1,7 @@
 # MGT-Xcitri
 
 Forked from [LanLab/MGT-local](https://github.com/LanLab/MGT-local)  
-A Docker-powered, Django-based multilevel genome typing (MGT) database & web interface for _Xanthomonas citri_.
-
----
-
-## Overview
-
-This project bundles:
-
-- A **Django** web application for browsing and querying MGT data  
-- A **PostgreSQL** backend, automatically initialized on first run  
-- A simple **email activation** workflow for user accounts  
-- Scripts for **dumping/restoring** your local database  
-- A pipeline for **calling alleles** from read/genome files
-
-Everything runs via **Docker Compose**—no manual Python or Postgres installs required.
+A Docker-based multilevel genome typing (MGT) database & web interface for _Xanthomonas citri_.
 
 ---
 
@@ -30,7 +16,10 @@ cd MGT-Xcitri
 cp example.env .env
 
 # 3) Build & start the stack
-docker compose up --build
+docker compose up
+
+#OR run in detached mode (no console output)
+docker compose up -d
 ```
 
 ---
@@ -51,16 +40,16 @@ Fill in MGT-Xcitri/.env (see example.env for comments). Manually set **POSTGRES_
 ```
 #Postgres settings  ### MUST add POSTGRES_PASSWORD
 POSTGRES_USER=mgt
-POSTGRES_PASSWORD=<<<enter-password-here>>>
+POSTGRES_PASSWORD=<enter-password-here>
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
 POSTGRES_DB=xcitri
 
-#Django Settings ### MUST add DJANGO_EMAIL and DJANGO_SECRET_KEY
+#Django Settings ### MUST add DJANGO_SUPERUSER, DJANGO_EMAIL and DJANGO_SECRET_KEY
 
-DJANGO_SUPERUSER=Ref
-DJANGO_EMAIL=<<<enter-email-here>>>
-DJANGO_SECRET_KEY=<<<enter-random-secret-key-here>>>
+DJANGO_SUPERUSER=<enter-superusername ##MUST not be "Ref">
+DJANGO_EMAIL=<enter-email-here>
+DJANGO_SECRET_KEY=<enter-secret-key-here>
 DJANGO_SUPERUSER_PASSWORD=${POSTGRES_PASSWORD}
 DB_INIT_FLAG=/var/lib/db_init/.db_initialized
 
@@ -88,16 +77,17 @@ MGT_URL="http://127.0.0.1:8000"
 DEBUG=False
 MLST_WEBSITE_PASSWORD=${POSTGRES_PASSWORD}
 
-
-
+#Kraken settings set KRAKEN_DB_PATH if you have an existing local kraken database you wish to use, otherwise KRAKEN_URL will be downloaded and used.
+KRAKEN_DB_PATH=
+KRAKEN_URL=https://ccb.jhu.edu/software/kraken/dl/minikraken_20171019_8GB.tgz
 ```
 
 ## Running the Server
 
 After `docker compose up`:
 
-- **First run only**: the init script will create the DB schema, superuser, and MLST role.  
-- **Subsequent runs** skip DB init and go straight to Django.
+- **First run only**: the init script will create the DB and build the website based on the X. citri scheme.  
+- **Subsequent runs** will skip the DB init.
 
 Open your browser at:
 
@@ -108,48 +98,43 @@ or change to the ip address of your remote machine if running remotely (also cha
 
 ---
 
-## Testing Email
+## Email configuration
 
-- **Console backend** writes activation emails to your web logs:
-
+- Users can create accounts within the MGT website, where a **Console backend** writes activation emails to your web logs or to the console if not running in detached mode (docker compose up):
+  Use the link produced on the console or find it in the log with:
   ```bash
   docker compose logs -f web
   ```
 
-- **SMTP** will send real mail—trigger a password reset at `/accounts/password_reset/`.
+- Users can also use real email activation by uncommenting and completing **SMTP** settings in `./.env`.
 
 ---
 
-## Typing Isolates (Pipeline)
+## Typing Isolates
 
-> **Under development**—the cron pipeline is not fully wired up.  
+> To type isolates, first extract alleles and other information from genome assemblies or raw reads using `./scripts/reads_to_alleles.py`
 
-1. **Generate alleles** from reads/genomes:  
-   ```bash
-   # on host or inside the web container
-   conda activate mgtenv
-   cd Mgt/Mgt/MGT_processing/Reads2MGTAlleles
-   ./README.md  # follow that README to run reads_to_alleles.py
-   ```
+> Alleles can also be processed as a batch by completing `./allele_file_details.tsv` and running `./scripts/extract_alleles.py`
+
+1. **Extract** alleles and other information from genome assemblies or raw reads using `./scripts/reads_to_alleles.py`
+
+   OR
+
+   Alleles can also be extracted as a batch by completing `./allele_file_details.tsv` and running `./scripts/extract_alleles.py`
 
 2. **Upload** the resulting allele files + metadata via the web UI (create a Project).
 
-3. **(Future)** Run the cron pipeline to finalize allele calls & MGT assignment:
+3. **Finalise** allele calls & assign MGT by running:
 
-   ```bash
-   cd Mgt/Mgt/Scripts
-   python cron_pipeline.py \
-     -s Mgt.settings_template \
-     -d xcitri \
-     --allele_to_db \
-     --local
-   ```
+   `./scripts/call_alleles.sh`
 
 ---
 
 ## Dump & Restore Database
 
-We provide helper scripts under `scripts/` so **no Docker knowledge** is needed.
+Helper scripts are available to export (dump) and import databases from the docker image and allow mobility of the database. 
+
+**Note** that all user details (usernames, passwords, etc.) will also be exported with the database dump.
 
 ### Dump (export)
 
@@ -166,19 +151,7 @@ We provide helper scripts under `scripts/` so **no Docker knowledge** is needed.
 ./load_db.sh path-or-URL-to-dump.sql
 ```
 
-> These scripts use your running `db` service and the credentials in `.env.db`.
-
----
-
-## 🚧 Pushing to Remote
-
-To push a dump to a staging/production Postgres (outside Docker):
-
-```bash
-./push_db.sh \
-  path-to-local-dump.sql \
-  postgres://user:pass@staging.example.org:5432/xcitri
-```
+> These scripts use your running `db` service and the credentials in `.env`. The website must be "up" to run these successfully.
 
 ---
 

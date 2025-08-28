@@ -255,13 +255,11 @@ main() {
 
   load_env_if_present
   validate_env_vars
-
-  report_existing_stack "$pname"
-
+  
   if [[ $NUKE -eq 1 ]]; then
     nuke_stack "$pname"
   else
-    warn "Existing resources (if any) were NOT removed. Use --nuke to fully reset."
+    report_existing_stack "$pname"
   fi
 
   build_and_up "$pname"

@@ -17,12 +17,6 @@ cp example.env .env
 
 # 3) Install stack, run initial setup, and start website service
 ./scripts/install.sh
-
-# Website can be stopped with:
-docker compose down
-
-# Website can be restarted with:
-docker compose up -d
 ```
 
 ---
@@ -87,12 +81,19 @@ KRAKEN_URL=https://ccb.jhu.edu/software/kraken/dl/minikraken_20171019_8GB.tgz
 
 ## Running the Server
 
-After `docker compose up`:
+Once installed, the website can be stopped with:
+```
+docker compose down
+```
 
-- **First run only**: the init script will create the DB and build the website based on the X. citri scheme.  
-- **Subsequent runs** will skip the DB init.
+The website can be restarted with:
+```
+docker compose up -d
+```
 
-Open your browser at:
+The above commands must be called from within the MGT-Xcitri directory.
+
+To access the website following installation or `docker compose up -d`. Open your browser at:
 
 ```
 http://127.0.0.1:8000/
@@ -108,16 +109,14 @@ or change to the ip address of your remote machine if running remotely (also cha
   ```bash
   docker compose logs -f web
   ```
-
-- Users can also use real email activation by uncommenting and completing **SMTP** settings in `./.env`.
+- Alternatively, users can log into the website with the Superuser details provided in `./.env`
+- Users can also activate real email activation by uncommenting and completing **SMTP** settings in `./.env`.
 
 ---
 
 ## Typing Isolates
 
- - To type isolates, first extract alleles and other information from genome assemblies or raw reads using `./scripts/reads_to_alleles.py`
-
- - Alleles can also be processed as a batch by completing `./allele_file_details.tsv` and running `./scripts/extract_alleles.py`
+ - To type isolates,
 
 1. **Extract** alleles and other information from genome assemblies or raw reads using `./scripts/reads_to_alleles.py`
 

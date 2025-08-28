@@ -38,7 +38,7 @@ docker compose up -d
 
 ## Configuration (.env)
 
-Fill in MGT-Xcitri/.env (see example.env for comments). Manually set **POSTGRES_PASSWORD**, **DJANGO_EMAIL** and **DJANGO_SECRET_KEY**:
+Fill in MGT-Xcitri/.env (see example.env for comments). Manually set **POSTGRES_PASSWORD**, **DJANGO_SUPERUSER**, **DJANGO_EMAIL** and **DJANGO_SECRET_KEY**:
 
 ```
 #Postgres settings  ### MUST add POSTGRES_PASSWORD

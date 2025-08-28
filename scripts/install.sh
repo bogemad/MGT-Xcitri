@@ -8,7 +8,7 @@ set -Eeuo pipefail
 # - Builds & starts services fresh
 #
 # Usage:
-#   ./scripts/install.sh [--force] [--nuke] [--no-up]
+#   ./scripts/install.sh [--force] [--nuke]
 #############################################
 
 PROJECT_NAME_DEFAULT="mgt-xcitri"
@@ -19,13 +19,11 @@ PORTS_TO_CHECK=("5432" "8000")
 # CLI flags
 FORCE=0
 NUKE=0
-NO_UP=0
 
 for arg in "$@"; do
   case "$arg" in
     --force) FORCE=1 ;;
     --nuke)  NUKE=1 ;;
-    --no-up) NO_UP=1 ;;
     *) echo "Unknown option: $arg" >&2; exit 2 ;;
   esac
 done
@@ -164,15 +162,12 @@ nuke_stack() {
 build_and_up() {
   local pname="$1"
   info "Building images…"
+  
   docker compose -p "$pname" build
-
-  if [[ $NO_UP -eq 1 ]]; then
-    ok "Build complete. Skipping 'up' as requested (--no-up)."
-    return
-  fi
+  docker compose run --rm kraken-init
 
   info "Running initial setup and starting stack…"
-  docker compose -p "$pname" up -d
+  docker compose -p "$pname" up 
 
   #add while loop test for complete setup?
 

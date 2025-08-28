@@ -367,7 +367,7 @@ def make_tables(args):
     outapmapping.close()
     print("4 - made cc and ap tables and files")
 
-def make_isolateandmgt(args,schemes):
+def make_isolateandmgt(args,schemes,superuser):
     """
         Col_username = 0
         Col_projectName = 1
@@ -391,14 +391,14 @@ def make_isolateandmgt(args,schemes):
         Col_serovar = 19
     """
     outhead = "Username\tProject\tprivacy_status\tIsolatename\t\t\tdate\tyear\tmonth\tpostcode\tstate\tcountry\tcontinent\tsource\ttype\thost\thostdisease\t\t7geneMLST\tserovar\n"
-    outhead += "Ref\tRef\tPublic\tRef\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n"
+    outhead += f"{superuser}\tRef\tPublic\tMSCT1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n"
     outf = open(args.temp + "/isolate_info.tab", "w")
     outf.write(outhead)
     outf.close()
 
 
     outmgt = "Username\tProject\tIsolatename\tAssignmentStatus\t{}\n".format("\t".join(schemes))
-    outmgt += "Ref\tRef\tRef\tA\t{}\n".format("\t".join(["1.0"]*len(schemes)))
+    outmgt += "{}\tRef\tMSCT1\tA\t{}\n".format(superuser, "\t".join(["1.0"]*len(schemes)))
     outf = open(args.temp + "/mgt_annotations.tab", "w")
     outf.write(outmgt)
     outf.close()
@@ -453,7 +453,7 @@ def main():
     locils = make_posinref(args)
     schemes = make_schemesInfo(args,locils)
     make_tables(args)
-    make_isolateandmgt(args,schemes)
+    make_isolateandmgt(args,schemes,settings.SUPERUSER)
 
 if __name__ == "__main__":
 

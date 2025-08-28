@@ -129,9 +129,10 @@ report_existing_stack() {
   if [[ -n "$vols" ]]; then
     warn "Detected volumes:
 $vols"
-    confirm "Proceed with install? Existing volumes may cause issues with install. Slecet N and run ./scripts/install.sh --nuke if you wish to remove existing volumes." || die "Aborted."
+    is_vols=1
   else
     ok "No matching volumes detected."
+    is_vols=0
   fi
 
   local nets
@@ -139,23 +140,21 @@ $vols"
   if [[ -n "$nets" ]]; then
     warn "Detected networks:
 $nets"
-    confirm "Proceed with install? Existing networks may cause issues with install. Slecet N and run ./scripts/install.sh --nuke if you wish to remove existing networks." || die "Aborted."
+    is_nets=1
   else
     ok "No matching networks detected."
+    is_nets=0
   fi
+let is_exist=is_vols+is_nets
+if [[ is_exist == 0 ]]; then
+  return 1
+else
+  return 0
+fi
 }
 
 nuke_stack() {
   local pname="$1"
-  warn "This will stop & remove containers, images, volumes, and orphan resources for project '$pname'. 
-  
-  This should only be done with a freshly cloned git repository (git clone https://github.com/bogemad/MGT-Xcitri.git)
-
-  IMPORTANTLY: This will delete any existing MGT database. If this is not your first install and wish to keep an existing database, please dump your database to file prior to running this script with --nuke.
-  
-  "
-  confirm "Proceed with full clean-up (IRREVERSIBLE)?" || die "Aborted."
-
   info "Bringing down stack and removing images/volumes/orphans…"
   docker compose -p "$pname" down --rmi all --volumes --remove-orphans || true
 
@@ -216,6 +215,8 @@ wait_for_first_run_init() {
     # Check the init flag file inside the container
     if docker exec "$cid" bash -lc "[[ -f '$INIT_FLAG_PATH' ]]"; then
       ok "Initialisation flag found inside web container."
+      info "Collecting logs to ${LOG_FILE}…"
+      docker compose -p "$pname" logs --no-color > "$LOG_FILE" 2>&1 || true
       return 0
     fi
 
@@ -256,12 +257,18 @@ main() {
   load_env_if_present
   validate_env_vars
   
-  if [[ $NUKE -eq 1 ]]; then
-    nuke_stack "$pname"
-  else
-    report_existing_stack "$pname"
-  fi
+  if report_existing_stack "$pname"; then
+    warn "Previous installation detected. Would you like to perform a clean install?
+    This will stop & remove containers, images, volumes, and orphan resources for project '$pname'.
 
+    IMPORTANTLY: This will also delete any existing MGT database. If you have uploaded and called alleles on existing isolates and wish to keep this data, please dump your database to file prior to running this script.
+
+    A clean install should only be done if there have been problems with a previous install or wish to start again. Clean installs should be done with a freshly cloned git repository (previous MGT-Xcitri dirctory removed and git clone https://github.com/bogemad/MGT-Xcitri.git)
+    "
+    if confirm "Proceed with clean install (IRREVERSIBLE)? Press N to exit."; then
+      nuke_stack "$pname"
+    else
+      exit
   build_and_up "$pname"
 }
 

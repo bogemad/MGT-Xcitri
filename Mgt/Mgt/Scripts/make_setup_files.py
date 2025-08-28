@@ -391,7 +391,7 @@ def make_isolateandmgt(args,schemes,superuser):
         Col_serovar = 19
     """
     outhead = "Username\tProject\tprivacy_status\tIsolatename\t\t\tdate\tyear\tmonth\tpostcode\tstate\tcountry\tcontinent\tsource\ttype\thost\thostdisease\t\t7geneMLST\tserovar\n"
-    outhead += f"{superuser}\tRef\tPublic\tMSCT1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n"
+    outhead += f"{superuser}\tRef\tPublic\tMSCT1\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t4\tmalvacearum\n"
     outf = open(args.temp + "/isolate_info.tab", "w")
     outf.write(outhead)
     outf.close()

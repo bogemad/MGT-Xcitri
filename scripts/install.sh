@@ -269,6 +269,8 @@ main() {
       nuke_stack "$pname"
     else
       exit
+    fi
+  fi
   build_and_up "$pname"
 }
 

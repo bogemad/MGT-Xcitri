@@ -15,13 +15,13 @@ cd MGT-Xcitri
 # 2) Copy & edit your env file
 cp example.env .env
 
-# 3) Build the kraken database
-docker compose run --rm kraken-init
+# 3) Install stack, run initial setup, and start website service
+./scripts/install.sh
 
-# 4) Build & start the stack
-docker compose up
+# Website can be stopped with:
+docker compose down
 
-#OR run in detached mode (no console output)
+# Website can be restarted with:
 docker compose up -d
 ```
 
@@ -115,9 +115,9 @@ or change to the ip address of your remote machine if running remotely (also cha
 
 ## Typing Isolates
 
-> To type isolates, first extract alleles and other information from genome assemblies or raw reads using `./scripts/reads_to_alleles.py`
+ - To type isolates, first extract alleles and other information from genome assemblies or raw reads using `./scripts/reads_to_alleles.py`
 
-> Alleles can also be processed as a batch by completing `./allele_file_details.tsv` and running `./scripts/extract_alleles.py`
+ - Alleles can also be processed as a batch by completing `./allele_file_details.tsv` and running `./scripts/extract_alleles.py`
 
 1. **Extract** alleles and other information from genome assemblies or raw reads using `./scripts/reads_to_alleles.py`
 

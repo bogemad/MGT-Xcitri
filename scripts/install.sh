@@ -15,7 +15,12 @@ PROJECT_NAME_DEFAULT="mgt-xcitri"
 COMPOSE_FILE_DEFAULT="compose.yaml"
 # Common ports for this stack (adjust if your compose uses different)
 PORTS_TO_CHECK=("5432" "8000")
-
+# First-run init wait config
+INIT_FLAG_PATH="/var/lib/db_init/.db_initialized"  # inside web container
+INIT_CHECK_INTERVAL=5   # seconds between checks
+INIT_TIMEOUT=300        # 5 min max wait (adjust as needed)
+LOG_DIR="./logs"
+LOG_FILE="${LOG_DIR}/install.log"
 # CLI flags
 FORCE=0
 NUKE=0
@@ -124,6 +129,7 @@ report_existing_stack() {
   if [[ -n "$vols" ]]; then
     warn "Detected volumes:
 $vols"
+    confirm "Proceed with install? Existing volumes may cause issues with install. Slecet N and run ./scripts/install.sh --nuke if you wish to remove existing volumes." || die "Aborted."
   else
     ok "No matching volumes detected."
   fi
@@ -133,6 +139,7 @@ $vols"
   if [[ -n "$nets" ]]; then
     warn "Detected networks:
 $nets"
+    confirm "Proceed with install? Existing networks may cause issues with install. Slecet N and run ./scripts/install.sh --nuke if you wish to remove existing networks." || die "Aborted."
   else
     ok "No matching networks detected."
   fi
@@ -140,7 +147,13 @@ $nets"
 
 nuke_stack() {
   local pname="$1"
-  warn "This will stop & remove containers, images, volumes, and orphan resources for project '$pname'."
+  warn "This will stop & remove containers, images, volumes, and orphan resources for project '$pname'. 
+  
+  This should only be done with a freshly cloned git repository (git clone https://github.com/bogemad/MGT-Xcitri.git)
+
+  IMPORTANTLY: This will delete any existing MGT database. If this is not your first install and wish to keep an existing database, please dump your database to file prior to running this script with --nuke.
+  
+  "
   confirm "Proceed with full clean-up (IRREVERSIBLE)?" || die "Aborted."
 
   info "Bringing down stack and removing images/volumes/orphans…"
@@ -159,6 +172,58 @@ nuke_stack() {
   ok "Clean slate for '$pname'."
 }
 
+wait_for_first_run_init() {
+  local pname="$1"
+  local started_at elapsed cid health
+
+  mkdir -p "$LOG_DIR"
+
+  info "Waiting for first-run initialisation to complete…"
+  started_at=$(date +%s)
+
+  # Resolve container id for the 'web' service in this project
+  # We re-resolve each loop in case the container is restarted/recreated
+  while :; do
+    # Has timeout passed?
+    elapsed=$(( $(date +%s) - started_at ))
+    if (( elapsed >= INIT_TIMEOUT )); then
+      error "Timed out after ${INIT_TIMEOUT}s waiting for initialisation flag."
+      info "Collecting logs to ${LOG_FILE}…"
+      # Capture the full compose logs (no color), to a file
+      docker compose -p "$pname" logs --no-color > "$LOG_FILE" 2>&1 || true
+      warn "Saved logs to: ${LOG_FILE}"
+      warn "You can also inspect live logs with: docker compose -p \"$pname\" logs -f"
+      die "Initialisation did not complete in time. Please review the logs above."
+    fi
+
+    # Obtain container id for the 'web' service
+    cid="$(docker compose -p "$pname" ps -q web || true)"
+    if [[ -z "$cid" ]]; then
+      # Stack may still be starting up
+      sleep "$INIT_CHECK_INTERVAL"
+      continue
+    fi
+
+    # Optional: if a healthcheck exists, short-circuit on 'unhealthy'
+    health="$(docker inspect --format='{{.State.Health.Status}}' "$cid" 2>/dev/null || echo "unknown")"
+    if [[ "$health" == "unhealthy" ]]; then
+      error "Web container is 'not running'."
+      info "Collecting logs to ${LOG_FILE}…"
+      docker compose -p "$pname" logs --no-color > "$LOG_FILE" 2>&1 || true
+      die "Container reported unhealthy state. See ${LOG_FILE}."
+    fi
+
+    # Check the init flag file inside the container
+    if docker exec "$cid" bash -lc "[[ -f '$INIT_FLAG_PATH' ]]"; then
+      ok "Initialisation flag found inside web container."
+      return 0
+    fi
+
+    # Not ready yet—sleep and retry
+    sleep "$INIT_CHECK_INTERVAL"
+  done
+}
+
 build_and_up() {
   local pname="$1"
   info "Building images…"
@@ -167,9 +232,9 @@ build_and_up() {
   docker compose run --rm kraken-init
 
   info "Running initial setup and starting stack…"
-  docker compose -p "$pname" up 
+  docker compose -p "$pname" up -d
 
-  #add while loop test for complete setup?
+  wait_for_first_run_init "$pname"
 
   ok "Stack is up. Use 'docker compose -p \"$pname\" ps' to view status."
 }

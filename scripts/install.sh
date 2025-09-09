@@ -177,50 +177,40 @@ wait_for_first_run_init() {
 
   mkdir -p "$LOG_DIR"
 
-  info "Waiting for first-run initialisation to complete…"
+  info "Streaming logs while waiting for first-run initialisation…"
   started_at=$(date +%s)
 
-  # Resolve container id for the 'web' service in this project
-  # We re-resolve each loop in case the container is restarted/recreated
+  # stream logs to console AND save to file
+  docker compose -p "$pname" logs -f --no-color 2>&1 | tee "$LOG_FILE" &
+  local log_pid=$!
+
+  # ensure we clean up log streaming on function exit
+  trap "kill $log_pid 2>/dev/null || true" RETURN
+
   while :; do
-    # Has timeout passed?
     elapsed=$(( $(date +%s) - started_at ))
     if (( elapsed >= INIT_TIMEOUT )); then
       error "Timed out after ${INIT_TIMEOUT}s waiting for initialisation flag."
-      info "Collecting logs to ${LOG_FILE}…"
-      # Capture the full compose logs (no color), to a file
-      docker compose -p "$pname" logs --no-color > "$LOG_FILE" 2>&1 || true
-      warn "Saved logs to: ${LOG_FILE}"
-      warn "You can also inspect live logs with: docker compose -p \"$pname\" logs -f"
-      die "Initialisation did not complete in time. Please review the logs above."
+      die "Initialisation did not complete in time. Logs are in $LOG_FILE"
     fi
 
-    # Obtain container id for the 'web' service
     cid="$(docker compose -p "$pname" ps -q web || true)"
     if [[ -z "$cid" ]]; then
-      # Stack may still be starting up
       sleep "$INIT_CHECK_INTERVAL"
       continue
     fi
 
-    # Optional: if a healthcheck exists, short-circuit on 'unhealthy'
     health="$(docker inspect --format='{{.State.Health.Status}}' "$cid" 2>/dev/null || echo "unknown")"
     if [[ "$health" == "unhealthy" ]]; then
-      error "Web container is 'not running'."
-      info "Collecting logs to ${LOG_FILE}…"
-      docker compose -p "$pname" logs --no-color > "$LOG_FILE" 2>&1 || true
-      die "Container reported unhealthy state. See ${LOG_FILE}."
+      error "Web container is unhealthy."
+      die "Container reported unhealthy state. Logs are in $LOG_FILE"
     fi
 
-    # Check the init flag file inside the container
     if docker exec "$cid" bash -lc "[[ -f '$INIT_FLAG_PATH' ]]"; then
       ok "Initialisation flag found inside web container."
-      info "Collecting logs to ${LOG_FILE}…"
-      docker compose -p "$pname" logs --no-color > "$LOG_FILE" 2>&1 || true
       return 0
     fi
 
-    # Not ready yet—sleep and retry
     sleep "$INIT_CHECK_INTERVAL"
   done
 }

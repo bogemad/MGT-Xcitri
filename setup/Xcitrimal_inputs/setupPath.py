@@ -4,28 +4,28 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 
 # CHANGE App name (usually the database name with a captial letter)
-APPNAME='Xcitri'
+APPNAME='Xcitrimal'
 
 # CHANGE Species name that you want displayed with the page.
-SPECIES = 'Xanthomonas citri'
+SPECIES = 'Xanthomonas citri subsp. malvacearum'
 
 # CHANGE full path of the reference genome 
-REF_GENOME = os.path.join(BASE_DIR, 'setup', 'Xcitri_inputs', 'NCBI_MSCT1_Xcmal_complete.fasta')
+REF_GENOME = os.path.join(BASE_DIR, 'setup', 'Xcitrimal_inputs', 'NCBI_MSCT1_Xcmal_complete.fasta')
 
 # CHANGE full path of the lociLocations file 
-LOCI_LOC = os.path.join(BASE_DIR, 'setup', 'Xcitri_inputs', 'lociLocations_MSCT.txt')
+LOCI_LOC = os.path.join(BASE_DIR, 'setup', 'Xcitrimal_inputs', 'lociLocations_MSCT.txt')
 
 # CHANGE full path to folder of schemes 
-SCHEME_ACCESSIONS = os.path.join(BASE_DIR, 'setup', 'Xcitri_inputs', 'Schemes/')
+SCHEME_ACCESSIONS = os.path.join(BASE_DIR, 'setup', 'Xcitrimal_inputs', 'Schemes/')
 
 # CHANGE number of schemes 
-SCHEME_NO = 7
+SCHEME_NO = 8
 
 # CHANGE to list of ODCSLS, which is a string of numbers separated by ',' (i.e. "1,2,5,10")
 ODCLS = "1,2,5,10"
 
 # CHANGE full path to store the reference files (typically have the App name as the last part of the path)
-REF_FILES = os.path.join(BASE_DIR, 'tmp_files', 'Xcitri/')
+REF_FILES = os.path.join(BASE_DIR, 'tmp_files', 'Xcitrimal/')
 
 # CHANGE full path of the settings_template
 SETTING_FILE=os.path.join(BASE_DIR, 'Mgt', 'Mgt', 'Mgt', 'settings_template.py')

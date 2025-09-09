@@ -9,7 +9,6 @@ services:
       - PGPORT=${POSTGRES_PORT}
       - PGUSER=${POSTGRES_USER}
       - PGPASSWORD=${POSTGRES_PASSWORD}
-      - PGDATABASE=${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -42,7 +41,10 @@ services:
         if [ ! -f \"${DB_INIT_FLAG}\" ]; then
           echo '⚙️  First‐run: initializing database...';
           cd setup;
+          export POSTGRES_DB=xcitri
           bash setup_new_database.ssh Xcitri_inputs.setupPath;
+          export POSTGRES_DB=xcitrimal
+          bash setup_new_database.ssh Xcitrimal_inputs.setupPath;
         else
           echo '✅ Skipping DB init (flag exists at ${DB_INIT_FLAG})';
         fi;

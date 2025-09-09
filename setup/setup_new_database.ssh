@@ -89,6 +89,10 @@ os=$(uname -s)
 
 echo "creating database"
 
+dropdb --if-exists "$PGDATABASE"
+createdb "$PGDATABASE"
+dropdb --if-exists default
+createdb default
 psql -v ON_ERROR_STOP=1 \
      --username "$PGUSER" \
      --dbname  "$PGDATABASE" \
@@ -119,10 +123,6 @@ psql -v ON_ERROR_STOP=1 \
                     END IF;
                   END
                 \$\$;"
-dropdb --if-exists "$PGDATABASE"
-createdb "$PGDATABASE"
-dropdb --if-exists default
-createdb default
 psql -d "$PGDATABASE" -c "grant all privileges on database ${db_name} to mlstwebsite"
 psql -d "$PGDATABASE" -c "grant all privileges on database ${db_name} to Ref"
 psql -d "$PGDATABASE" -c "grant all privileges on database ${db_name} to ${dbuser}"

@@ -295,6 +295,3 @@ echo $(pwd)
 # echo $(pwd)
 
 python manage.py migrate --settings $settings_prefix 
-mkdir -p "$(dirname "${DB_INIT_FLAG}")"
-touch "${DB_INIT_FLAG}"
-echo "✅ Database initialized, flag created at ${DB_INIT_FLAG}"

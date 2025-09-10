@@ -28,13 +28,13 @@ ODCLS = "1,2,5,10"
 REF_FILES = os.path.join(BASE_DIR, 'tmp_files', 'Xcitri/')
 
 # CHANGE full path of the settings_template
-SETTING_FILE=os.path.join(BASE_DIR, 'Mgt', 'Mgt', 'Mgt', 'settings_template.py')
+SETTING_FILE=os.path.join(BASE_DIR, 'Mgt', 'Mgt', 'Mgt', 'settings_Xcitri.py')
 
 # CHANGE full path of the root to MGT-local project 
 PATH_MGT= BASE_DIR
 
 # CHANGE to settings prefix (relative path separated by dots)
-SETTINGS_PREFIX="Mgt.settings_template"
+SETTINGS_PREFIX="Mgt.settings_Xcitri"
 
 # CHANGE full path of where you want to store species specific alleles that are generated. 
 REFALLELES=os.path.join(BASE_DIR, 'species_specific_alleles/')

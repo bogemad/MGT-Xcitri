@@ -18,7 +18,7 @@ PORTS_TO_CHECK=("5432" "8000")
 # First-run init wait config
 INIT_FLAG_PATH="/var/lib/db_init/.db_initialized"  # inside web container
 INIT_CHECK_INTERVAL=5   # seconds between checks
-INIT_TIMEOUT=300        # 5 min max wait (adjust as needed)
+INIT_TIMEOUT=900        # 15 min max wait (adjust as needed)
 LOG_DIR="./logs"
 LOG_FILE="${LOG_DIR}/install.log"
 # CLI flags

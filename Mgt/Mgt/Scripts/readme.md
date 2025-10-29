@@ -147,7 +147,7 @@ username	projectName	isolateName	schName1	schName2	schName3	...	schNameN
 
 13. Script to generate the ap_cc view table: + (sql code for running directly on the sql server).
 
-```python3 genViewSqlAndClass.py ../ Mgt Salmonella mlstWebsite```
+```python3 genViewSqlAndClass.py ../ Mgt Salmonella mlstWebsite Mgt.settings_local_sk```
 
 Two files are written out:
 1. "runOnDb.sql" : run the two sql statements in postgresSql (can follow the method in 14.).

@@ -439,7 +439,7 @@ def convertColsToDict(columns, isAuth, org):
 
 
 	list_tabAps = list(Tables_ap.objects.filter(table_num=0).values('table_name', 'display_order', 'display_name'))
-	list_tabCcs = list(Tables_cc.objects.all().values('table_name', 'display_table', 'display_order', 'display_name'))
+	list_tabCcs = list(Tables_cc.objects.all().values('table_name', 'display_table', 'display_order', 'display_name').order_by('display_table', 'display_order'))
 
 	return (list_colsInfo, list_tabAps, list_tabCcs)
 

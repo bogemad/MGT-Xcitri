@@ -209,7 +209,7 @@ function checkAndGetPageNum(inputId, startIndex, endIndex, searchVar){
 
 
 
-function getOtherPage(pageNumToGet, searchVar, isCsv, isMgt9Ap, isMr, isGrapeTree){
+function getOtherPage(pageNumToGet, searchVar, isCsv, isMgt9Ap, isMr, isGrapeTree, ap_to_download_mgtTn){
 	// console.log(searchVar);
 
 	if (document.getElementById('pageNumLoading')){
@@ -233,7 +233,8 @@ function getOtherPage(pageNumToGet, searchVar, isCsv, isMgt9Ap, isMr, isGrapeTre
 	if (searchVar[0].hasOwnProperty("pageType")){
 		if (searchVar[0].pageType == "pg_initialIsolates"){
 			//console.log("pg_initialIsolates");
-			getInitialData(url_initialIsolates, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isMr, isGrapeTree);
+			
+			getInitialData(url_initialIsolates, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isMr, isGrapeTree, ap_to_download_mgtTn);
 
 		}
 		else if (searchVar[0].pageType == "pg_initialProjIsolates"){
@@ -637,7 +638,7 @@ function doTheAjaxOrderBy(url, order_by, dir){
 
 
 // AJAX: Get initial data (on page load).
-function getInitialData(url, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isMr, isGrapeTree){
+function getInitialData(url, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isMr, isGrapeTree, ap_to_download_mgtTn){
 	// console.log("here!");
 
 	var theBools = getTheBoolsForDisp();
@@ -652,6 +653,7 @@ function getInitialData(url, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isMr, 
 		'isMgt9Ap': isMgt9Ap,
 		'isMr': isMr,
 		'isGrapeTree': isGrapeTree,
+		'ap_to_download_mgtTn': ap_to_download_mgtTn,
 	};
 
 	console.log("The data is ");
@@ -668,7 +670,6 @@ function getInitialData(url, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isMr, 
 	else{
 		ajaxCall(url, data, doVisChngSuccess);
 	}
-
 }
 
 

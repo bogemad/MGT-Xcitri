@@ -189,8 +189,8 @@ function numToColor(num) {
 
 function doCcLayout(isolates, searchVar, isShowCol, colsInfo, tabAps, tabCcs, serverStatusChoices, assignStatusChoices, privStatusChoices, org){
 
-	console.log("The isolates are");
-	console.log(isolates);
+	//console.log("The isolates are");
+	//console.log(isolates);
 
 	$('#tabularViewDiv').show();
 	$('#graphicalViewDiv').hide();

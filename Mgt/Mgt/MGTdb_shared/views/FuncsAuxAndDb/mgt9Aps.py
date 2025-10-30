@@ -64,12 +64,12 @@ def get_values(iterables, key_to_find):
 			return item[1]
 
 
-def getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org):
+def getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org, ap_to_download_mgtTn):
 	Tables, Mgt = getModels(org)
 
 	# get mgt_id col. num.
 	mgtIdColNum = getMgtIdColNum(list_colsInfo)
-	print("################# mgtIdColNum")
+	print("################# mgtIdColNum", mgtIdColNum)
 	print(list_colsInfo)
 	# print(mgtIdColNum)
 
@@ -82,7 +82,7 @@ def getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org):
 	# print("The mgt ids")
 	# print(forDownload_mgtIds)
 
-	(mgtId_ap9Id, list_tabRows_byAp9Id, colNamesCombined) = getMgt9Aps_v2(theMgtIds_inIso, isGrapeTree, org)
+	(mgtId_ap9Id, list_tabRows_byAp9Id, colNamesCombined) = getMgt9Aps_v2(theMgtIds_inIso, isGrapeTree, org, ap_to_download_mgtTn)
 
 	# print(mgtId_ap9Id)
 
@@ -111,6 +111,10 @@ def getLargestSchemeId(org):
 	largestScheme = Tables_ap.objects.filter(table_num=0).order_by('-display_order').first() 
 	return (largestScheme.scheme_id, largestScheme.table_name) 
 
+def getTheRequestedSchemeId(org, ap_to_download_mgtTn): 
+	Tables_ap, Mgt = getModels(org)
+	requestedScheme = Tables_ap.objects.filter(table_name=ap_to_download_mgtTn).get() 
+	return (requestedScheme.scheme_id, requestedScheme.table_name) 
 
 def getTablesMgt9AsList(largestSchemeId, org):
 	Tables_ap, Mgt = getModels(org)
@@ -118,23 +122,26 @@ def getTablesMgt9AsList(largestSchemeId, org):
 
 	tablesMgt9 = [item[0] for item in tablesMgt9Res]
 
+	print (tablesMgt9)
 	return tablesMgt9
 
 
 
 def getTheAp9IdsFromMgt(theMgtIds, largestScheme_tn, org):
 	Tables, Mgt = getModels(org)
+	print ('theMgtIds', theMgtIds)
 	mgtId_ap9Id = Mgt.objects.filter(id__in=theMgtIds).values_list('id', largestScheme_tn) # 'ap9_0_id')
 
+	print ('mgtId_ap9Id', mgtId_ap9Id)
 	list_ap9Id = [item[1] for item in mgtId_ap9Id] # [1] == getting only the ap9_0_id
 
 	return(mgtId_ap9Id, list_ap9Id)
 
 
 
-def getMgt9Aps_v2(theMgtIds, isGrapeTree, org):
+def getMgt9Aps_v2(theMgtIds, isGrapeTree, org, ap_to_download_mgtTn):
 	Tables, Mgt = getModels(org)
-	(largestSchemeId, largestScheme_tn) = getLargestSchemeId(org)
+	(largestSchemeId, largestScheme_tn) = getTheRequestedSchemeId(org, ap_to_download_mgtTn)
 
 	tablesMgt9 = getTablesMgt9AsList(largestSchemeId, org)
 	(mgtId_ap9Id, list_ap9Id) = getTheAp9IdsFromMgt(theMgtIds, largestScheme_tn, org)

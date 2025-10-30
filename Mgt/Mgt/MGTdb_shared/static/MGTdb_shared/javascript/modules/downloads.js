@@ -57,14 +57,32 @@ function doTheDownload(searchVar){
 	getOtherPage(null, searchVar, true, false, false, false);
 }
 
-function downloadMgt9Aps(searchVar){
+function downloadMgt9Aps(searchVar, btn, toDownloadDn, list_tabAps){
 	document.getElementById("btnMgt9Download").disabled = true;
-	document.getElementById("fetchingcsv").style.display='';
+	document.getElementById('ap9download_tn_error').textContent = ''; 
 
 
 	let isGrapeTreeFmt = document.getElementById('isGrapeTree').checked;
-	console.log("Is grapetree format required " + isGrapeTreeFmt);
+	let table_name = ''; 
 
+	for (let i=0; i<list_tabAps.length; i++){ 
+		console.log('TabAp', list_tabAps[i]); 
+		if (list_tabAps[i].display_name == toDownloadDn){
+			table_name = list_tabAps[i].table_name; 
+		}
 
-	getOtherPage(null, searchVar, false, true, false, isGrapeTreeFmt);
+		
+	}
+
+	if (table_name == ''){
+		document.getElementById("btnMgt9Download").disabled = false; 
+		document.getElementById('ap9download_tn_error').textContent = 'Error: No such MGT level as ' +  toDownloadDn + '! Sorry cannot download allelic profiles at the moment.';  
+		return;
+	} 
+	else { 
+		document.getElementById("fetchingcsv").style.display='';
+		getOtherPage(null, searchVar, false, true, false, isGrapeTreeFmt, table_name);
+
+	}
+	
 }

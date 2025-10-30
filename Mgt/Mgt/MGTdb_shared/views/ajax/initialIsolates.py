@@ -30,8 +30,7 @@ from django.conf import settings
 
 @csrf_exempt
 def page(request, org):
-	View_apcc = getModels(org)
-	print(org)
+	# View_apcc = getModels(org)
 	# Get amr data for display
 	isAmr = False
 	thisAppName = __package__.split(".")[0]
@@ -45,6 +44,8 @@ def page(request, org):
 
 	isCsv = False;
 	isMgt9Ap = False # added for mgt9Ap download
+	ap_to_download_mgtTn = None
+
 	isMr = False;
 	isGrapeTree = False;
 
@@ -94,6 +95,12 @@ def page(request, org):
 
 			if ('isGrapeTree' in request.POST and request.POST['isGrapeTree'] == 'true'):
 				isGrapeTree = True
+
+			if ('ap_to_download_mgtTn' in request.POST ): 
+				ap_to_download_mgtTn = request.POST['ap_to_download_mgtTn']
+		
+	
+
 	else:
 		# load all public data
 		sessionVar.append(dict())
@@ -133,8 +140,15 @@ def page(request, org):
 	# print(isolates);
 
 	if isMgt9Ap:
+		print ('DOES IT GET TO THIS POINT?', ap_to_download_mgtTn)
+		print (list_colsInfo)
 		# get the data
-		(mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined) = mgt9Aps.getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org)
+
+		if ap_to_download_mgtTn == None: 
+			print ("Nothing to do when downloading allelicProfiles")
+		
+
+		(mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined) = mgt9Aps.getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org, ap_to_download_mgtTn)
 
 		outstring = mgt9Aps.convertToCsv_ap9(isolates, mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined, isGrapeTree, org)
 
@@ -151,6 +165,8 @@ def page(request, org):
 
 	isAp = True; isDst = False; isMgtColor = True;
 	if 'isAp' in request.POST and request.POST['isAp'] == "false":
+		print ('DOES IT GET TO THIS POINT?')
+		
 		isAp = False
 	if 'isDst' in request.POST and request.POST['isDst'] == 'true':
 		isDst = True
@@ -170,14 +186,15 @@ def page(request, org):
 	elif isCsv:
 		# theCsvBuf = makeCsvString.convertToCsv(list_colsInfo, isolates)
 		# return theCsvBuf
-
+		print ('DOES IT GET TO THIS POINT?')
+		
 		outstring = makeCsv(isolates, request.user.is_authenticated, list_colsInfo, org)
 		return HttpResponse(outstring)
 
 	else:
 		isolatesjson = det.convertToJson(isolates)
 
-		return render(request, 'Templates/isolateTable.html', {"isolates": isolatesjson, "isoCount": isoCount, "pageInfo": dict_pageInfo, "isAp": isAp, "isDst": isDst, "isMgtColor": isMgtColor, "colsInfo": list_colsInfo, 'tabAps': list_tabAps, 'tabCcs': list_tabCcs, 'serverStatus': list_serverStatus, 'assignStatus': list_assignStatus, 'privStatus': list_privStatus, "mergedIds": mergedIds, "boolChoices": boolChoices, "organism": org })
+		return render(request, 'Templates/isolateTable.html', {"isolates": isolatesjson, "isoCount": isoCount, "pageInfo": dict_pageInfo, "isAp": isAp, "isDst": isDst, "isMgtColor": isMgtColor, "colsInfo": list_colsInfo, 'tabAps': list_tabAps, 'tabCcs': list_tabCcs, 'serverStatus': list_serverStatus, 'assignStatus': list_assignStatus, 'privStatus': list_privStatus, "mergedIds": mergedIds, "boolChoices": boolChoices, "organism": org, 'apDownloadLvls': settings.AP_DWN_LVLS_DISPLAY_NAME})
 
 def getModels(org):
     models = importlib.import_module(f'{org}.models')

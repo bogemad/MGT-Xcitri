@@ -374,15 +374,18 @@
 						<button type=button class="btn btn-primary" onclick="javascript:doTheDownload({{ request.session.sessionVar }});">Download the entire set as CSV </button><button type="button" class="btn" data-toggle="modal" data-target="#exampleModal" data-whatever="@downloadAsCsv" onclick="theHelpFns(this);"><span class='fas fa-info-circle'> </span></button><br>
 					</div>
 					<div class="col-sm">
-						{% for apDwnldLvl in apDownloadLvls %}
-							<button id="btnMgt9Download" title="For phylogeny generation with other tools" type=button class="btn btn-primary" onclick="javascript:downloadMgt9Aps({{ request.session.sessionVar }}, btnMgt9Download, '{{ apDwnldLvl }}', {{ tabAps }});"> Download {{ apDwnldLvl }} allelic profiles </button><button type="button" class="btn" data-toggle="modal" data-target="#exampleModal" data-whatever="@downloadAsAps" onclick="theHelpFns(this);"><span class='fas fa-info-circle'> </span></button> <br>
+						{% if apDownloadLvls|length > 0 %}
+							{% for apDwnldLvl in apDownloadLvls %}
+								<button id="btnMgt9Download" title="For phylogeny generation with other tools" type=button class="btn btn-primary" onclick="javascript:downloadMgt9Aps({{ request.session.sessionVar }}, btnMgt9Download, '{{ apDwnldLvl }}', {{ tabAps }});"> Download {{ apDwnldLvl }} allelic profiles </button><button type="button" class="btn" data-toggle="modal" data-target="#exampleModal" data-whatever="@downloadAsAps" onclick="theHelpFns(this);"><span class='fas fa-info-circle'> </span></button> <br>
 
+								
+							{% endfor %}
 							
-						{% endfor %}
-						<input type="checkbox" id="isGrapeTree" name="nm_isGrapeTree"></input>
-						<label for="nm_isGrapeTree"> In GrapeTree format </label><br>
+							<input type="checkbox" id="isGrapeTree" name="nm_isGrapeTree"></input>
+							<label for="nm_isGrapeTree"> In GrapeTree format </label><br>
 
-						<p id='ap9download_tn_error' class='error'></p>
+							<p id='ap9download_tn_error' class='error'></p>
+						{% endif %}
 					</div>
 					<div class="col-sm">
 						<button id="viewInMicroReact" title="Send data to Microreact and visualize there." type=button class="btn btn-primary" onclick="javascript:sendToMicroreact({{ request.session.sessionVar }}, viewInMicroReact);">Download for Microreact </button><button type="button" class="btn" data-toggle="modal" data-target="#exampleModal" data-whatever="@viewInMicroReact" onclick="theHelpFns(this);"><span class='fas fa-info-circle'> </span></button>

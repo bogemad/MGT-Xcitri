@@ -5,7 +5,7 @@ import {downloadCsvSuccess, downloadMgt9ApsSuccess} from './downloads.js';
 import {downloadMrSuccess} from './microreact.js';
 
 
-function getInitialProjData(url, projectId, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isGrapeTree, isMr){
+function getInitialProjData(url, projectId, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isGrapeTree, isMr, ap_to_download_mgtTn){
 	let theBools = getTheBoolsForDisp();
 	let data = {
 		'projectId': JSON.stringify(projectId),
@@ -19,6 +19,7 @@ function getInitialProjData(url, projectId, pageNumToGet, orderBy, dir, isCsv, i
 		'isMgt9Ap': isMgt9Ap,
 		'isGrapeTree': isGrapeTree,
 		'isMr': isMr,
+		'ap_to_download_mgtTn': ap_to_download_mgtTn,
 	};
 
 	if (isMr == true){

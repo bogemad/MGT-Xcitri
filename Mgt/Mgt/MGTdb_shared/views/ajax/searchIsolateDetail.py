@@ -22,6 +22,8 @@ from ..FuncsAuxAndDb import sessionFns as ses
 from ..FuncsAuxAndDb import mgt9Aps
 from ..FuncsAuxAndDb.makeCsvString_mr import makeCsv_andSendToMr
 
+from django.conf import settings 
+
 @csrf_exempt
 def page(request, org):
 	View_apcc, Project = getModels(org)
@@ -56,6 +58,8 @@ def page(request, org):
 
 	isCsv = False
 	isMgt9Ap = False
+	ap_to_download_mgtTn = None 
+
 	maxIsolatesPerPage = c.TOTAL_ISO_PER_PAGE
 	isGrapeTree = False
 	isMr = False
@@ -113,6 +117,8 @@ def page(request, org):
 			if ('isGrapeTree' in request.POST and request.POST['isGrapeTree'] == 'true'):
 				isGrapeTree = True
 
+			if ('ap_to_download_mgtTn' in request.POST ): 
+				ap_to_download_mgtTn = request.POST['ap_to_download_mgtTn']
 
 	elif ses.isASearchPresent_detail(request.POST):
 		# a new search has been initiated
@@ -158,9 +164,14 @@ def page(request, org):
 		isolates = mergeCcOdc.get_merges(list_colsInfo, isolates, org)
 
 	if isMgt9Ap:
+
+		if ap_to_download_mgtTn == None: 
+			print ("Nothing to do when downloading allelicProfiles")
+			return HttpResponse('Please contact sysadmin if you believe you are seeing this in error.')
+
 		# get the data
 		print("The isGrapeTree is " + str(isGrapeTree))
-		(mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined) = mgt9Aps.getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org)
+		(mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined) = mgt9Aps.getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org, ap_to_download_mgtTn)
 
 		outstring = mgt9Aps.convertToCsv_ap9(isolates, mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined, isGrapeTree, org)
 
@@ -206,7 +217,7 @@ def page(request, org):
 	else:
 		jsonIso = det.convertToJson(isolates)
 
-		outdata = {"isolates": jsonIso, "isoCount": isoCount, "pageInfo": dict_pageInfo, "isAp": isAp, 'isDst':isDst, 'isMgtColor': isMgtColor, "mergedIds": mergedIds, "colsInfo": list_colsInfo, 'tabAps': list_tabAps, 'tabCcs': list_tabCcs, 'serverStatus': list_serverStatus, 'assignStatus': list_assignStatus, 'privStatus': list_privStatus, "mergedIds": mergedIds, "boolChoices": boolChoices, 'organism': org}
+		outdata = {"isolates": jsonIso, "isoCount": isoCount, "pageInfo": dict_pageInfo, "isAp": isAp, 'isDst':isDst, 'isMgtColor': isMgtColor, "mergedIds": mergedIds, "colsInfo": list_colsInfo, 'tabAps': list_tabAps, 'tabCcs': list_tabCcs, 'serverStatus': list_serverStatus, 'assignStatus': list_assignStatus, 'privStatus': list_privStatus, "mergedIds": mergedIds, "boolChoices": boolChoices, 'organism': org, 'apDownloadLvls': settings.AP_DWN_LVLS_DISPLAY_NAME[org]}
 
 		#  "colIsoId": c.IsolateId, "isoInfo": isoInfo, "apInfo": apHeader, "ccInfo": ccHeader, "mgtInfo": mgtInfo, "epiInfo": epiInfo, "locInfo": locInfo, "islnInfo": islnInfo,
 		return render(request, 'Templates/isolateTable.html', outdata)

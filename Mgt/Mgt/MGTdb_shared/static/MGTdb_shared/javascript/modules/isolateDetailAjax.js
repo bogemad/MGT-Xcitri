@@ -101,7 +101,7 @@ function isolateDetailSearch(url, assignStatusChoices, serverStatusChoices, priv
 		return;
 	}
 
-	sendToIsolateDetail(url, apSearchMap, ccEpiSearchMap, locMap, islnMap, projMap, isoMap, null, null, null, null, false, false, false);
+	sendToIsolateDetail(url, apSearchMap, ccEpiSearchMap, locMap, islnMap, projMap, isoMap, null, null, null, null, false, false, false, null);
 
 }
 
@@ -175,7 +175,7 @@ function addCcValsToMap(tds, allSearchMap){//  jsonIsoHgtInfo){
 }
 
 
-function sendToIsolateDetail(url, apSearchMap, ccEpiSearchMap, locMap, islnMap, projMap, isoMap, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isGrapeTree, isMr){
+function sendToIsolateDetail(url, apSearchMap, ccEpiSearchMap, locMap, islnMap, projMap, isoMap, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isGrapeTree, isMr, ap_to_download_mgtTn){
 
   // console.log("THIS IS THE IS-GRAPH-TREE " + isGrapeTree);
 
@@ -199,6 +199,7 @@ function sendToIsolateDetail(url, apSearchMap, ccEpiSearchMap, locMap, islnMap, 
 		'isGrapeTree': isGrapeTree,
 		'isMr': isMr,
 		'searchType': 'and',
+		'ap_to_download_mgtTn': ap_to_download_mgtTn,
 	};
 
   if (isMr == true){

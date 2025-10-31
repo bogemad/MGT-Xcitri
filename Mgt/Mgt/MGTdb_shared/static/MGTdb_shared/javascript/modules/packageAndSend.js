@@ -239,21 +239,21 @@ function getOtherPage(pageNumToGet, searchVar, isCsv, isMgt9Ap, isMr, isGrapeTre
 		}
 		else if (searchVar[0].pageType == "pg_initialProjIsolates"){
 			// console.log("pg_initialProjIsolates");
-			getInitialProjData(url_initialProjIsolates, null, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isGrapeTree, isMr);
+			getInitialProjData(url_initialProjIsolates, null, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isGrapeTree, isMr, ap_to_download_mgtTn);
 		}
 		else if (searchVar[0].pageType == "pg_searchIsoList"){
 			// console.log("pg_searchIsoList");
-			sendToIsolateList(url_searchIsoList, null, null, null, null, null, null, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, searchType, isGrapeTree, isMr);
+			sendToIsolateList(url_searchIsoList, null, null, null, null, null, null, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, searchType, isGrapeTree, isMr, ap_to_download_mgtTn);
 		}
 		else if (searchVar[0].pageType == "pg_searchIsoDetail"){
 			console.log("pg_searchIsoDetail");
 		 	// console.log("some thing else entirely!!");
 			sendToIsolateDetail(url_searchIsoDetail, null, null,
-				null, null, null, null, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isGrapeTree, isMr);
+				null, null, null, null, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, isGrapeTree, isMr, ap_to_download_mgtTn);
 		}
 		else if (searchVar[0].pageType == "pg_searchProjDetail"){
 			// console.log("pg_searchProjDetail");
-			sendProjSearchData(url_searchProjDetail, null, null, null, null, null, null, null, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, searchType, isGrapeTree, isMr);
+			sendProjSearchData(url_searchProjDetail, null, null, null, null, null, null, null, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, searchType, isGrapeTree, isMr, ap_to_download_mgtTn);
 		}
 	}
 }
@@ -338,11 +338,11 @@ function sortElemsAndSend(url, filterTblName, colsInfo, apInfo, ccInfo, serverSt
 	let urlToSendTo = getUrlToSendToFromUrl();
 
 	if (urlToSendTo == 'pg_searchIsoList'){
-		sendToIsolateList(url, searchVals.arr_ap, searchVals.arr_cc, searchVals.arr_epi, searchVals.arr_iso, searchVals.arr_isln, searchVals.arr_loc, null, null, null, null, null, searchVals.searchType, false, false);
+		sendToIsolateList(url, searchVals.arr_ap, searchVals.arr_cc, searchVals.arr_epi, searchVals.arr_iso, searchVals.arr_isln, searchVals.arr_loc, null, null, null, null, null, searchVals.searchType, false, false, null);
 	}
 	else if (urlToSendTo == 'pg_searchProjDetail'){
 		let projId = getProjIdFromUrl();
-		sendProjSearchData(url_searchProjDetail, projId, searchVals.arr_ap, searchVals.arr_cc, searchVals.arr_epi, searchVals.arr_iso, searchVals.arr_isln, searchVals.arr_loc, null, null, null, null, null, searchVals.searchType, false, false);
+		sendProjSearchData(url_searchProjDetail, projId, searchVals.arr_ap, searchVals.arr_cc, searchVals.arr_epi, searchVals.arr_iso, searchVals.arr_isln, searchVals.arr_loc, null, null, null, null, null, searchVals.searchType, false, false, null);
 	}
 }
 
@@ -686,10 +686,10 @@ function searchInProj(url, tblName, isoInfo, apInfo, ccInfo, epiInfo, isoMLoc, i
 	// searchVals.arr_iso.push({"project": projectId});
 
 	// 3. pass to ajax function.
-	sendProjSearchData(url, projectId, searchVals.arr_ap, searchVals.arr_cc, searchVals.arr_epi, searchVals.arr_iso, searchVals.arr_isln, searchVals.arr_loc, null, null, null, null, false, 'and', false, false);
+	sendProjSearchData(url, projectId, searchVals.arr_ap, searchVals.arr_cc, searchVals.arr_epi, searchVals.arr_iso, searchVals.arr_isln, searchVals.arr_loc, null, null, null, null, false, 'and', false, false, null);
 }
 
-function sendToIsolateList(url, arr_ap, arr_cc, arr_epi, arr_iso, arr_isln, arr_loc, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, searchType, isGrapeTree, isMr){
+function sendToIsolateList(url, arr_ap, arr_cc, arr_epi, arr_iso, arr_isln, arr_loc, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, searchType, isGrapeTree, isMr, ap_to_download_mgtTn){
 
 	var theBools = getTheBoolsForDisp();
 	console.log("isAp in sendToIsolateList " + theBools.isAp + " searchType: " + searchType);
@@ -712,6 +712,7 @@ function sendToIsolateList(url, arr_ap, arr_cc, arr_epi, arr_iso, arr_isln, arr_
 		'searchType': searchType,
 		'isGrapeTree': isGrapeTree,
 		'isMr': isMr,
+		'ap_to_download_mgtTn': ap_to_download_mgtTn,
 	};
 
 
@@ -732,7 +733,7 @@ function sendToIsolateList(url, arr_ap, arr_cc, arr_epi, arr_iso, arr_isln, arr_
 
 
 
-function sendProjSearchData(url, projectId, arr_ap, arr_cc, arr_epi, arr_iso, arr_isln, arr_loc, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, searchType, isGrapeTree, isMr){
+function sendProjSearchData(url, projectId, arr_ap, arr_cc, arr_epi, arr_iso, arr_isln, arr_loc, pageNumToGet, orderBy, dir, isCsv, isMgt9Ap, searchType, isGrapeTree, isMr, ap_to_download_mgtTn){
 	console.log("The searchType2 is " + searchType + ", isGrapeTree: " + isGrapeTree );
 	var theBools = getTheBoolsForDisp();
 	var data= {
@@ -754,6 +755,7 @@ function sendProjSearchData(url, projectId, arr_ap, arr_cc, arr_epi, arr_iso, ar
 		'searchType': searchType,
 		'isGrapeTree': isGrapeTree,
 		'isMr': isMr,
+		'ap_to_download_mgtTn': ap_to_download_mgtTn,
 	};
 
 	if (isMr == true){

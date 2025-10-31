@@ -140,14 +140,12 @@ def page(request, org):
 	# print(isolates);
 
 	if isMgt9Ap:
-		print ('DOES IT GET TO THIS POINT?', ap_to_download_mgtTn)
-		print (list_colsInfo)
-		# get the data
 
 		if ap_to_download_mgtTn == None: 
 			print ("Nothing to do when downloading allelicProfiles")
+			return HttpResponse('Please contact sysadmin if you believe you are seeing this in error.')
 		
-
+		# get the data
 		(mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined) = mgt9Aps.getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org, ap_to_download_mgtTn)
 
 		outstring = mgt9Aps.convertToCsv_ap9(isolates, mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined, isGrapeTree, org)
@@ -194,7 +192,7 @@ def page(request, org):
 	else:
 		isolatesjson = det.convertToJson(isolates)
 
-		return render(request, 'Templates/isolateTable.html', {"isolates": isolatesjson, "isoCount": isoCount, "pageInfo": dict_pageInfo, "isAp": isAp, "isDst": isDst, "isMgtColor": isMgtColor, "colsInfo": list_colsInfo, 'tabAps': list_tabAps, 'tabCcs': list_tabCcs, 'serverStatus': list_serverStatus, 'assignStatus': list_assignStatus, 'privStatus': list_privStatus, "mergedIds": mergedIds, "boolChoices": boolChoices, "organism": org, 'apDownloadLvls': settings.AP_DWN_LVLS_DISPLAY_NAME})
+		return render(request, 'Templates/isolateTable.html', {"isolates": isolatesjson, "isoCount": isoCount, "pageInfo": dict_pageInfo, "isAp": isAp, "isDst": isDst, "isMgtColor": isMgtColor, "colsInfo": list_colsInfo, 'tabAps': list_tabAps, 'tabCcs': list_tabCcs, 'serverStatus': list_serverStatus, 'assignStatus': list_assignStatus, 'privStatus': list_privStatus, "mergedIds": mergedIds, "boolChoices": boolChoices, "organism": org, 'apDownloadLvls': settings.AP_DWN_LVLS_DISPLAY_NAME[org]})
 
 def getModels(org):
     models = importlib.import_module(f'{org}.models')

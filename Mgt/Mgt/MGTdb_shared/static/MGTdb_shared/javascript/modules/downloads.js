@@ -66,7 +66,7 @@ function downloadMgt9Aps(searchVar, btn, toDownloadDn, list_tabAps){
 	let table_name = ''; 
 
 	for (let i=0; i<list_tabAps.length; i++){ 
-		console.log('TabAp', list_tabAps[i]); 
+		// console.log('TabAp', list_tabAps[i]); 
 		if (list_tabAps[i].display_name == toDownloadDn){
 			table_name = list_tabAps[i].table_name; 
 		}

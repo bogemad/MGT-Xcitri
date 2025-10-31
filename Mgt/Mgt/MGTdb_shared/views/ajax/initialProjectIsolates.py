@@ -28,6 +28,7 @@ import re
 from ..FuncsAuxAndDb import mgt9Aps
 from ..FuncsAuxAndDb.makeCsvString_mr import makeCsv_andSendToMr
 
+from django.conf import settings
 
 @csrf_exempt
 @login_required
@@ -60,6 +61,8 @@ def page(request, org):
 
 	isCsv = False
 	isMgt9Ap = False
+	ap_to_download_mgtTn = None 
+
 	isGrapeTree = False
 	maxIsolatesPerPage = c.TOTAL_ISO_PER_PAGE
 	isMr = False
@@ -111,6 +114,9 @@ def page(request, org):
 			if ('isGrapeTree' in request.POST and request.POST['isGrapeTree'] == 'true'):
 				isGrapeTree = True
 
+			if ('ap_to_download_mgtTn' in request.POST ): 
+				ap_to_download_mgtTn = request.POST['ap_to_download_mgtTn']	
+
 		if ('isMr' in request.POST and request.POST['isMr'] == 'true'):
 			isMr = True;
 
@@ -147,8 +153,13 @@ def page(request, org):
 
 
 	if isMgt9Ap:
+
+		if ap_to_download_mgtTn == None: 
+			print ("Nothing to do when downloading allelicProfiles")
+			return HttpResponse('Please contact sysadmin if you believe you are seeing this in error.')
+
 		# get the data
-		(mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined) = mgt9Aps.getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org)
+		(mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined) = mgt9Aps.getTheDataMgt9Aps(isolates, list_colsInfo, isGrapeTree, org, ap_to_download_mgtTn)
 
 		outstring = mgt9Aps.convertToCsv_ap9(isolates, mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined, isGrapeTree, org)
 
@@ -197,7 +208,7 @@ def page(request, org):
 
 		isolatesjson = det.convertToJson(isolates)
 
-		return render(request, 'Templates/isolateTable.html', {"isolates": isolatesjson, "isoCount": isoCount, "pageInfo": dict_pageInfo, "isAp": isAp, 'isDst': isDst, 'isMgtColor': isMgtColor, "colsInfo": list_colsInfo, 'tabAps': list_tabAps, 'tabCcs': list_tabCcs, 'serverStatus': list_serverStatus, 'assignStatus': list_assignStatus, 'privStatus': list_privStatus, "mergedIds": mergedIds, 'boolChoices': boolChoices, 'organism': org })
+		return render(request, 'Templates/isolateTable.html', {"isolates": isolatesjson, "isoCount": isoCount, "pageInfo": dict_pageInfo, "isAp": isAp, 'isDst': isDst, 'isMgtColor': isMgtColor, "colsInfo": list_colsInfo, 'tabAps': list_tabAps, 'tabCcs': list_tabCcs, 'serverStatus': list_serverStatus, 'assignStatus': list_assignStatus, 'privStatus': list_privStatus, "mergedIds": mergedIds, 'boolChoices': boolChoices, 'organism': org, 'apDownloadLvls': settings.AP_DWN_LVLS_DISPLAY_NAME[org] })
 
 def getModels(org):
     models = importlib.import_module(f'{org}.models')

@@ -47,7 +47,7 @@ def getPuFnsForDwnld(org):
 
 	appName = Isolate._meta.app_label # + "/" +
 
-	dict_fns['aps'] = glob.glob(dir_filesForDownload + appName + "_aps_[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].txt.tar.gz")
+	dict_fns['aps'] = glob.glob(dir_filesForDownload + appName + "_aps_MGT[0-9]_[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].txt.tar.gz")
 	dict_fns['alleles'] = glob.glob(dir_filesForDownload +  appName + "*_alleles_*")
 
 	# print(dir_filesForDownload)

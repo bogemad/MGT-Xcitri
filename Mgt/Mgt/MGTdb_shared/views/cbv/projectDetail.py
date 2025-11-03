@@ -72,8 +72,9 @@ def getProjApFileForDownload(projId, org):
 
 	appName = Project._meta.app_label
 
-	list_fns = glob.glob(dir_filesForDownload + appName + "_aps_" + projId + "_[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].txt.tar.gz")
+	list_fns = glob.glob(dir_filesForDownload + appName + "_aps_" + projId + "_MGT[0-9]_[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].txt.tar.gz")
 
+	print ('The filenames are', list_fns)
 
 	return list_fns
 

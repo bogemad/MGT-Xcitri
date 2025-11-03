@@ -76,7 +76,7 @@
 			{% if apFns %}
 				<ul>
 				{% for apFn in apFns %}
-					<li> <a href="{% url organism|stringformat:'s:downloadDbDump' apFn|filenameOnly %}"> {{apFn|filenameOnly}} </a> </li>
+					<li> <a href="{% url organism|stringformat:'s:downloadDbDump' apFn|filenameOnly %}"> {{apFn|filenameOnly}} </a> </li> 
 				{% endfor %}
 				</ul>
 			{% else %}

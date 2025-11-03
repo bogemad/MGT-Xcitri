@@ -45,8 +45,8 @@ def createTheDump(mgtPath, settingModuleName, queryNumLimit):
 
             appClass = __import__(appName + ".models")
 
-
-            tns_mgt9 = getLastMgtLvl(appClass)
+            for aScheme in settings.AP_DWN_LVLS_DISPLAY_NAME[appName]: 
+                tns_mgt9 = getTnsGivenScheme(appClass, aScheme)
 
 
             #filename =  puPath + appName + "_aps_" + str(date.today()) + ".txt"
@@ -55,7 +55,7 @@ def createTheDump(mgtPath, settingModuleName, queryNumLimit):
             #print ("## " + filename);
             # filename =  appName + "_aps_" + str(date.today()) + ".txt"
 
-            getAndPrint(appClass, queryNumLimit, tns_mgt9, dir_filesForDownload, appName)
+                getAndPrint(appClass, queryNumLimit, tns_mgt9, dir_filesForDownload, appName, aScheme)
 
 
 
@@ -69,12 +69,19 @@ def getLastMgtLvl(appClass):
 
      return tns_mgt9
 
+def getTnsGivenScheme(appClass, schemeId):
+    tns_mgt9 = appClass.models.Tables_ap.objects.filter(scheme_id=schemeId).order_by('table_num').values('table_name')
+
+    # tns_mgt9 = appClass.models.Tables_ap.objects.filter(scheme=mgt9Obj.scheme).order_by('table_num').values('table_name')
+
+    return tns_mgt9
+
 
 ##################################################### AUX - ap
 
 
 
-def getAndPrint(appClass, queryNumLimit, tns_mgt9, dir_filesForDownload, appName):
+def getAndPrint(appClass, queryNumLimit, tns_mgt9, dir_filesForDownload, appName, aScheme):
     # For each project
     projObjs = appClass.models.Project.objects.all()
 
@@ -87,9 +94,9 @@ def getAndPrint(appClass, queryNumLimit, tns_mgt9, dir_filesForDownload, appName
         if numPubIso > 0:
 
 
-            filename = appName + "_aps_" + str(projObj.id) + "_" + str(date.today()) + ".txt"
+            filename = appName + "_aps_" + str(projObj.id) + "_" + aScheme + '_' + str(date.today()) + ".txt"
             # re.sub('\_aps\_', '_aps_' + str(projObj.id) + '_', filename_orig)
-            toDelPattern = appName + "_aps_" + str(projObj.id) + "_"
+            toDelPattern = appName + "_aps_" + str(projObj.id) + "_" + aScheme
             # print ("The filename is " + filename);
 
 

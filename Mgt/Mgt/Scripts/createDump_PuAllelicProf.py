@@ -34,55 +34,67 @@ def createTheDump(mgtPath, settingModuleName, queryNumLimit):
     if not os.path.exists(dir_filesForDownload):
         sys.exit("Error: folder not found \'" + dir_filesForDownload + "\'")
 
-
+    
     # Loop through each app
     for appName in settings.APPS_DATABASE_MAPPING:
         if (appName != 'ShigEiFinder'):
-
+            
             # print (mgtPath + appName + "/" + settings.PU_DIR + "/")
 
             appClass = __import__(appName + ".models")
 
+            files_ = [] 
+            for aScheme in settings.AP_DWN_LVLS_DISPLAY_NAME[appName]: 
+                # print (settings.AP_DWN_LVLS_DISPLAY_NAME)
+                tns_mgt9 = getTnsGivenScheme(appClass, aScheme)
 
-            tns_mgt9 = getLastMgtLvl(appClass)
+                # print ('Tns_mgt9', tns_mgt9)
+
+                #filename =  puPath + appName + "_aps_" + str(date.today()) + ".txt"
+                filename =  appName + "_aps_" + aScheme + '_' + str(date.today()) + ".txt"
+
+                print ("## " + filename);
+
+                getAndPrint(appClass, queryNumLimit, tns_mgt9, filename)
+
+                os.system('tar -cvzf ' + filename + ".tar.gz " + filename)
+                # os.rename(filename + ".tar.gz",  puPath + filename + ".tar.gz")
+
+                print('Moving: ' + './' + filename + ".tar.gz to " + dir_filesForDownload + filename + ".tar.gz")
+                os.system('cp ' + filename+'.tar.gz ' + dir_filesForDownload + filename+'.tar.gz')
+                os.system('rm ' + filename+'.tar.gz ')
+                #subprocess.run('mv ' + filename + ".tar.gz " +  puPath + filename + ".tar.gz", shell=True)
 
 
-            #filename =  puPath + appName + "_aps_" + str(date.today()) + ".txt"
-            filename =  appName + "_aps_" + str(date.today()) + ".txt"
+                os.remove(filename)
+                # subprocess.run('tar -cvzf ' + filename '')
 
-            print ("## " + filename);
-
-            getAndPrint(appClass, queryNumLimit, tns_mgt9, filename)
-
-            os.system('tar -cvzf ' + filename + ".tar.gz " + filename)
-            # os.rename(filename + ".tar.gz",  puPath + filename + ".tar.gz")
-
-            print('Moving: ' + './' + filename + ".tar.gz to " + dir_filesForDownload + filename + ".tar.gz")
-            os.system('cp ' + filename+'.tar.gz ' + dir_filesForDownload + filename+'.tar.gz')
-            os.system('rm ' + filename+'.tar.gz ')
-            #subprocess.run('mv ' + filename + ".tar.gz " +  puPath + filename + ".tar.gz", shell=True)
-
-
-            os.remove(filename)
-            # subprocess.run('tar -cvzf ' + filename '')
-
-
+                files_.append(dir_filesForDownload + filename + '.tar.gz') 
+            
             # Delete all other files in the folder
-            apFiles = glob.glob(dir_filesForDownload + appName + '_aps_[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].txt.tar.gz')
+            apFiles = glob.glob(dir_filesForDownload + appName + '_aps_MGT[0-9]_[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].txt.tar.gz')
             print(apFiles)
 
+            print ('files_', files_)
             for apFn in apFiles:
-                if apFn != dir_filesForDownload + filename + '.tar.gz':
+                if apFn not in files_: # != dir_filesForDownload + filename + '.tar.gz':
                     os.remove(apFn)
-                    # print (apFiles)
+            print (apFiles)
 
 ##################################################### AUX - Table names
 def getLastMgtLvl(appClass):
-     mgt9Obj = appClass.models.Tables_ap.objects.filter(table_num=0).order_by('-display_order')[0]
+    mgt9Obj = appClass.models.Tables_ap.objects.filter(table_num=0).order_by('-display_order')[0]
 
-     tns_mgt9 = appClass.models.Tables_ap.objects.filter(scheme=mgt9Obj.scheme).order_by('table_num').values('table_name')
+    tns_mgt9 = appClass.models.Tables_ap.objects.filter(scheme=mgt9Obj.scheme).order_by('table_num').values('table_name')
 
-     return tns_mgt9
+    return tns_mgt9
+
+def getTnsGivenScheme(appClass, schemeId):
+    tns_mgt9 = appClass.models.Tables_ap.objects.filter(scheme_id=schemeId).order_by('table_num').values('table_name')
+
+    # tns_mgt9 = appClass.models.Tables_ap.objects.filter(scheme=mgt9Obj.scheme).order_by('table_num').values('table_name')
+
+    return tns_mgt9
 
 
 ##################################################### AUX - ap
@@ -124,7 +136,7 @@ def getAndPrint(appClass, queryNumLimit, tns_mgt9, filename):
         
         
 
-
+        print ('ZeroTn is', zeroTn)
         mgt9Ids = appClass.models.Isolate.objects.filter(privacy_status='PU', assignment_status='A').order_by('id').values_list('mgt__' + zeroTn, flat=True)[startCnt:endCount] # removed: **{'mgt__' + zeroTn+"__isnull": False}
 
         # mgt9Ids = appClass.models.Isolate.objects.filter(privacy_status='PU', assignment_status='A', **{'mgt__' + zeroTn+"__isnull": False}).order_by('id').values_list('mgt__' + zeroTn, flat=True)[startCnt:endCount]

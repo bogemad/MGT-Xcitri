@@ -12,7 +12,7 @@ def download(request, filename, org):
     
     appName = User._meta.app_label
 
-    if re.match('^' + appName + "_aps_[0-9]{4}\-[0-9]{2}\-[-0-9]{2}\.txt\.tar\.gz$", filename):
+    if re.match('^' + appName + "_aps_MGT[0-9]_[0-9]{4}\-[0-9]{2}\-[-0-9]{2}\.txt\.tar\.gz$", filename):
         print ("Pattern matched - 1")
 
         return doTheDownload(filename)
@@ -24,7 +24,7 @@ def download(request, filename, org):
         return doTheDownload(filename)
 
 
-    elif re.match('^' + appName + "_aps_[0-9]+_[0-9]{4}\-[0-9]{2}\-[-0-9]{2}\.txt\.tar\.gz$", filename):
+    elif re.match('^' + appName + "_aps_[0-9]+_MGT[0-9]_[0-9]{4}\-[0-9]{2}\-[-0-9]{2}\.txt\.tar\.gz$", filename):
 
         print ("Pattern matched - 3")
 
@@ -35,7 +35,7 @@ def download(request, filename, org):
 
         else:
             req_projId = extractProjectId(filename)
-
+            print('The extracted project id is', req_projId) 
             userProjIds = q.getUserProjectIds(request.user.username, org)
             # if User.objects.filter()
 

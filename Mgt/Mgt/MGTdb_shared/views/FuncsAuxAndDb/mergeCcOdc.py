@@ -15,7 +15,7 @@ def get_merge_dict(list_colsInfo, org):
 
         colnames[colname] = colno
         # for each cc get all cc and ccmerge columns
-        if colname.startswith("cc") and "merge" not in colname and colname != "cc2_1":
+        if colname.startswith("cc") and "merge" not in colname and colname not in  ["cc2_1", "cc2_5"]:
 
             querystring = f"""SELECT "identifier","merge_id_id" FROM "{org}_{colname}"; """
 

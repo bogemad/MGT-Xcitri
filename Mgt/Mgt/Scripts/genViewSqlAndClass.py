@@ -77,6 +77,10 @@ def tabs(num):
 
 	return tabStr
 
+
+
+
+
 ##################################### PRINT THE SQL FILE
 
 def printTheSqlFile(apTnObjs, ccTnObjs, appName, dbWebsiteUserName, fh_sql):
@@ -94,9 +98,11 @@ def printTheSqlFile(apTnObjs, ccTnObjs, appName, dbWebsiteUserName, fh_sql):
 
 		# print ap
 		printSelect_ap(fh_sql, apTn.display_order, apTn.table_name)
+
 		# print cc
 		ccTnsInSch = getCcTnsForScheme(apTn.scheme, ccTnObjs)
 
+		# print (ccTnsInSch)
 		if len(ccTnsInSch) ==  1:
 			ccTn = ccTnsInSch[0]
 
@@ -146,27 +152,37 @@ def printTheSqlFile(apTnObjs, ccTnObjs, appName, dbWebsiteUserName, fh_sql):
 		fh_sql.write(tNum(apTn.display_order) + "." + apTn.table_name + ", t" + str(apTn.display_order) + "." + apTn.table_name + "_st" + ", t" + str(apTn.display_order) + "." +  apTn.table_name + "_dst," + "\n")
 
 	counter_ap = 0
-	for apTn in apTnObjs:
+	
+	# Display table 1
+	list_displayTables = list(set(list(ccTnObjs.values_list('display_table', flat=True))))
+	# print ('list_displayTables from db', list_displayTables)
+	list_displayTables = list_displayTables
+	for displayTable in list_displayTables: 
+		for counter_ap, apTn in enumerate(apTnObjs):
 
-		ccTnsInSch = getCcTnsForScheme(apTn.scheme, ccTnObjs)
+			ccTnsInSch = getCcTnsForScheme_forDisplayTable(apTn.scheme, ccTnObjs, displayTable)
+			
 
-		counter_cc = 0
-		for ccTn in ccTnsInSch:
-			fh_sql.write(tNum(apTn.display_order) + ".")
+			# if len(ccTnsInSch) == 0: 
+			# 	continue 
+			# print ('This may be empty set sometimes', ccTnsInSch) 
 
-			fh_sql.write(ccFnForDjango(ccTn.display_table, ccTn.display_order))
 
-			fh_sql.write(", ")
-			fh_sql.write(tNum(apTn.display_order) + ".")
-			fh_sql.write(cc_currForDjango(ccTn.display_table, ccTn.display_order))
+			for counter_cc, ccTn in enumerate(ccTnsInSch):
+				fh_sql.write(tNum(apTn.display_order) + ".")
 
-			if counter_ap != len(apTnObjs) - 1 or counter_cc != len(ccTnsInSch) - 1:
-				fh_sql.write(",\n")
+				fh_sql.write(ccFnForDjango(ccTn.display_table, ccTn.display_order))
 
-			counter_cc = counter_cc + 1
+				fh_sql.write(", ")
+				fh_sql.write(tNum(apTn.display_order) + ".")
+				fh_sql.write(cc_currForDjango(ccTn.display_table, ccTn.display_order))
 
-		# sys.stdout.write("\n")
-		counter_ap = counter_ap + 1
+				if not (displayTable == list_displayTables[len(list_displayTables)-1] and counter_cc == len(ccTnsInSch) -1 and counter_ap == len(apTnObjs) -1):
+					# print ('This is the last value encountered!')
+					fh_sql.write(",\n")
+
+
+			
 
 	fh_sql.write("\nfrom \"" + appName + "_mgt\" as mgt ")
 
@@ -245,6 +261,16 @@ def getCcTnsForScheme(sch, ccTnObjs):
 
 	for ccTn in ccTnObjs:
 		if ccTn.scheme == sch:
+			list_ccObjsForSch.append(ccTn)
+
+	return list_ccObjsForSch
+
+def getCcTnsForScheme_forDisplayTable(sch, ccTnObjs, displayTab_num):
+
+	list_ccObjsForSch = list()
+
+	for ccTn in ccTnObjs:
+		if ccTn.scheme == sch and ccTn.display_table == displayTab_num:
 			list_ccObjsForSch.append(ccTn)
 
 	return list_ccObjsForSch

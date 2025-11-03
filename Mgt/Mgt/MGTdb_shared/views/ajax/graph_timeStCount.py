@@ -73,13 +73,13 @@ def page(request, org):
 				arr_iso.append(dict_)
 
 				# print("The project id " + str(projectId))
-				(isolates, columns) = routerGraph.getDataFromRightFn(arr_ap, arr_cc, arr_epi, arr_loc, arr_isln, arr_iso, request.user.username, True, None, searchType)
+				(isolates, columns) = routerGraph.getDataFromRightFn(arr_ap, arr_cc, arr_epi, arr_loc, arr_isln, arr_iso, request.user.username, True, None, searchType, org)
 
 				(arr_iso_noProj, projIds) = rmProjFromArrIso(arr_iso); print(projIds[0]);
 				print("The proj ids are: ")
 				print(projIds);
 
-				(isolates_bg, columns_bg) = routerGraph.getDataFromRightFn(arr_ap, arr_cc, arr_epi, arr_loc, arr_isln, arr_iso_noProj, None, False, projIds, searchType)
+				(isolates_bg, columns_bg) = routerGraph.getDataFromRightFn(arr_ap, arr_cc, arr_epi, arr_loc, arr_isln, arr_iso_noProj, None, False, projIds, searchType, org)
 
 				print ("The bg strains are: ")
 				print (isolates_bg)

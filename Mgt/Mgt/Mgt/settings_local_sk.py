@@ -242,4 +242,6 @@ STATIC_ROOT = 'Static/'
 
 RAWQUERIES_DISPLAY = {'Xcitri': ''} # CHANGE for extra queries in database but keep string empty if using default (i.e, 'Salmonella': '')
 
+SUPERUSER = get_env("DJANGO_SUPERUSER")
+
 AP_DWN_LVLS_DISPLAY_NAME = {'Xcitri': ['MGT7', 'MGT8']} # this must match the display_name in the database _tables_ap; 

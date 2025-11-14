@@ -44,7 +44,6 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '0.0.0.0', '[::1]', '*']
 
 INSTALLED_APPS = [
     'Xcitri', # CHANGE add new databases to this list. 
-    'Xcitrimal',
     'django_tables2',
     'Home',
     'MGTdb_shared',
@@ -108,10 +107,10 @@ FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o774
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 # 2018, Jan 9 - require a db router (if multiple databases)
-NCBI_RETRIEVAL_FREQUENCY = {'Xcitri': None, 'Xcitrimal': None} # CHANGE to frequency of retrieval
+NCBI_RETRIEVAL_FREQUENCY = {'Xcitri': None} # CHANGE to frequency of retrieval
 
 DATABASE_ROUTERS = ['Mgt.router.GenericRouter']
-APPS_DATABASE_MAPPING = {'Xcitri': 'xcitri', 'Xcitrimal': 'xcitrimal' } #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
+APPS_DATABASE_MAPPING = {'Xcitri': 'xcitri' } #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
 
 DATABASES = {
     'default': {
@@ -129,14 +128,6 @@ DATABASES = {
         "HOST": get_env("POSTGRES_HOST"), 
         "PORT": get_env("POSTGRES_PORT"), 
         'NAME': 'xcitri',
-    },
-    'xcitrimal': {
-        "ENGINE": "django.db.backends.postgresql",
-        "USER": get_env("POSTGRES_USER"), 
-        "PASSWORD": get_env("POSTGRES_PASSWORD"), 
-        "HOST": get_env("POSTGRES_HOST"), 
-        "PORT": get_env("POSTGRES_PORT"), 
-        'NAME': 'xcitrimal',
     },
 }
 
@@ -228,21 +219,6 @@ SPECIES_SEROVAR = {'Xcitri': {"species":'Xanthomonas citri',
                                   "blastident":85,
                                   "apzero":0.04
                                   },
-                    'Xcitrimal': {"species":'Xanthomonas citri',
-                                  "serovar":'',
-                                  "min_largest_contig":60000,
-                                  "max_contig_no":700,
-                                  "n50_min":20000,
-                                  "genome_min":4500000,
-                                  "genome_max":6000000,
-                                  "hspident":0.90,
-                                  "locusnlimit":0.8,
-                                  "snpwindow":40,
-                                  "densitylim":16,
-                                  "refsize":5.0,
-                                  "blastident":85,
-                                  "apzero":0.04
-                                  }              
                    }
 
 # Internationalization
@@ -266,6 +242,6 @@ DATE_FORMAT = 'Y-m-d'
 STATIC_URL = '/static/'
 STATIC_ROOT = 'Static/'
 
-RAWQUERIES_DISPLAY = {'Xcitri': '',  'Xcitrimal': 'xcitrimal'} # CHANGE for extra queries in database but keep string empty if using default (i.e, 'Salmonella': '')
+RAWQUERIES_DISPLAY = {'Xcitri': ''} # CHANGE for extra queries in database but keep string empty if using default (i.e, 'Salmonella': '')
 
-AP_DWN_LVLS_DISPLAY_NAME = {'Xcitri': ['MGT7', 'MGT8'], 'Xcitrimal': ['MGT8']} # this must match the display_name in the database _tables_ap; 
+AP_DWN_LVLS_DISPLAY_NAME = {'Xcitri': ['MGT7', 'MGT8']} # this must match the display_name in the database _tables_ap; 

@@ -18,14 +18,3 @@ docker compose exec -T db \
 
 echo "✅ Xcitri dump complete: ${OUTFILE}"
 
-OUTFILE=${1:-xcitrimal-$(date +%Y%m%dT%H%M%S).sql}
-echo "🚀 Dumping xcitrimal database to ${OUTFILE}…"
-# Run pg_dump inside the db container, streaming to the host file
-docker compose exec -T db \
-  pg_dump \
-    --username="${POSTGRES_USER}" \
-    --dbname="xcitrimal" \
-    --no-owner \
-  > "${OUTFILE}"
-
-echo "✅ Xcitrimal dump complete: ${OUTFILE}"

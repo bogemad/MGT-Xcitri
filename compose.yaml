@@ -43,8 +43,6 @@ services:
           cd setup;
           export POSTGRES_DB=xcitri
           bash setup_new_database.ssh Xcitri_inputs.setupPath;
-          export POSTGRES_DB=xcitrimal
-          bash setup_new_database.ssh Xcitrimal_inputs.setupPath;
           mkdir -p "$(dirname \"${DB_INIT_FLAG}\")";
           touch \"${DB_INIT_FLAG}\";
           echo \"✅ Database initialized, flag created at ${DB_INIT_FLAG}\";

@@ -19,7 +19,7 @@ LOCI_LOC = os.path.join(BASE_DIR, 'setup', 'Xcitri_inputs', 'lociLocations_MSCT.
 SCHEME_ACCESSIONS = os.path.join(BASE_DIR, 'setup', 'Xcitri_inputs', 'Schemes/')
 
 # CHANGE number of schemes 
-SCHEME_NO = 7
+SCHEME_NO = 8
 
 # CHANGE to list of ODCSLS, which is a string of numbers separated by ',' (i.e. "1,2,5,10")
 ODCLS = "1,2,5,10"
@@ -28,13 +28,13 @@ ODCLS = "1,2,5,10"
 REF_FILES = os.path.join(BASE_DIR, 'tmp_files', 'Xcitri/')
 
 # CHANGE full path of the settings_template
-SETTING_FILE=os.path.join(BASE_DIR, 'Mgt', 'Mgt', 'Mgt', 'settings_Xcitri.py')
+SETTING_FILE=os.path.join(BASE_DIR, 'Mgt', 'Mgt', 'Mgt', 'settings_local_sk.py')
 
 # CHANGE full path of the root to MGT-local project 
 PATH_MGT= BASE_DIR
 
 # CHANGE to settings prefix (relative path separated by dots)
-SETTINGS_PREFIX="Mgt.settings_Xcitri"
+SETTINGS_PREFIX="Mgt.settings_local_sk"
 
 # CHANGE full path of where you want to store species specific alleles that are generated. 
 REFALLELES=os.path.join(BASE_DIR, 'species_specific_alleles/')

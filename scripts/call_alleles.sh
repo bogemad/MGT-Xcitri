@@ -28,9 +28,4 @@ docker compose exec -T web bash -lc '
     -s template \
     -d Xcitri \
     --allele_to_db --local
-
-  python cron_pipeline.py \
-    -s template \
-    -d Xcitrimal \
-    --allele_to_db --local
 '

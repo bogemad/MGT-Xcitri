@@ -13,9 +13,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 import sys
 from django.core.exceptions import ImproperlyConfigured
-from dotenv import load_dotenv
 
-load_dotenv()
 
 def get_env(var_name):
     try:

@@ -40,7 +40,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '0.0.0.0', '[::1]', '*']
 
 INSTALLED_APPS = [
-    'Xcitri', # CHANGE add new databases to this list.  
+    'Xcitri', # CHANGE add new databases to this list. 
     'django_tables2',
     'Home',
     'MGTdb_shared',
@@ -107,7 +107,7 @@ FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o774
 NCBI_RETRIEVAL_FREQUENCY = {'Xcitri': None} # CHANGE to frequency of retrieval
 
 DATABASE_ROUTERS = ['Mgt.router.GenericRouter']
-APPS_DATABASE_MAPPING = {'Xcitri':'xcitri' } #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
+APPS_DATABASE_MAPPING = {'Xcitri':'xcitri'} #CHANGE change to appname in INSTALLED_APPS and database DATABASES in name normally upper and lowercase first letter i.e. Salmonella and salmonella
 
 DATABASES = {
     'default': {
@@ -226,7 +226,7 @@ SPECIES_SEROVAR = {'Xcitri': {"species":'Xanthomonas citri',
                                   "blastident":85,
                                   "apzero":0.04
                                   },
-}
+                                  }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -249,4 +249,6 @@ DATE_FORMAT = 'Y-m-d'
 STATIC_URL = '/static/'
 STATIC_ROOT = 'Static/'
 
-RAWQUERIES_DISPLAY = {'Xcitri': ''} # CHANGE for extra queries in database but keep string empty if using default (i.e, 'Salmonella': '')
+RAWQUERIES_DISPLAY = {'Xcitri': '', } # CHANGE for extra queries in database but keep string empty if using default (i.e, 'Salmonella': '')
+
+AP_DWN_LVLS_DISPLAY_NAME = {'Xcitri': ['MGT7', 'MGT8']} # this must match the display_name in the database _tables_ap; 

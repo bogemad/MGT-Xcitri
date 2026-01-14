@@ -324,27 +324,36 @@ def make_cc_inp_files(args,mgt,odc=False):
         ccmerge.write("Original cc\tMerged with")
         ccmerge.close()
 
-def make_tables(args):
+def make_tables(args, settings):
     odcdists = get_distances_frm_args(args)
     print(odcdists)
     outf = open(args.temp+"/tables_ccs.txt","w")
     outaptables = open(args.temp + "/tables_aps.txt", "w")
     outapmapping = open(args.temp + "/schemeToApMapping.txt", "w")
     outccInfo = open(args.temp+"/ccInfo.txt","w")
+    odclevels = [ int(x.replace("MGT","")) for x in settings.AP_DWN_LVLS_DISPLAY_NAME[args.appname] ]
 
     minlevel = 1
     maxlevel = args.schemeno
     odc1 = False
     if args.mgt1is7gene:
         minlevel=2
-    for i in range(minlevel,args.schemeno+1):
-        if i == maxlevel and min(odcdists) == 1:
-            outf.write(f"MGT{i}\t1,2\t{i},1\tMGT{i},ODC1\t1\n")
+    c = 1
+    for i in range(minlevel,maxlevel+1):
+        if (i in odclevels) and min(odcdists) == 1:
+            outf.write(f"MGT{i}\t1,2\t{i},{c}\tMGT{i},MGT{i}-ODC1\t1\n")
             outccInfo.write(f"MGT{i}\tMGT{i}_cc.txt	MGT{i}_cc_merges.txt	1_{i}\n")
             odc1=True
             make_cc_inp_files(args,i)
             outaptables.write(f"MGT{i}\t{i}\tMGT{i}\n")
             outapmapping.write(f"MGT{i}\tMGT{i}_gene_profiles.txt\n")
+            c+=1
+        elif i in odclevels:
+            for j in [x for x in odcdists if x != 1]:
+                outf.write(f"MGT{i}\t2\t{c}\tMGT{i}-ODC{j}\t{j}\n")
+                outccInfo.write(f"MGT{i}\tMGT{i}{j}_cc.txt	MGT{i}{j}_cc_merges.txt	2_{c}\n")
+                c+=1
+                make_cc_inp_files(args, i,odc=j)
         else:
             outf.write(f"MGT{i}\t1\t{i}\tMGT{i}\t1\n")
             outccInfo.write(f"MGT{i}\tMGT{i}_cc.txt	MGT{i}_cc_merges.txt	1_{i}\n")
@@ -352,15 +361,6 @@ def make_tables(args):
             outaptables.write(f"MGT{i}\t{i}\tMGT{i}\n")
             outapmapping.write(f"MGT{i}\tMGT{i}_gene_profiles.txt\n")
 
-    odcdists = [x for x in odcdists if x != 1]
-    c = 1
-    if odc1:
-        c+=1
-    for i in odcdists:
-        outf.write(f"MGT{maxlevel}\t2\t{c}\tODC{i}\t{i}\n")
-        outccInfo.write(f"MGT{maxlevel}\tMGT{maxlevel}{i}_cc.txt	MGT{maxlevel}{i}_cc_merges.txt	2_{c}\n")
-        c+=1
-        make_cc_inp_files(args, maxlevel,odc=i)
     outf.close()
     outccInfo.close()
     outaptables.close()
@@ -452,7 +452,7 @@ def main():
     make_refjson(args)
     locils = make_posinref(args)
     schemes = make_schemesInfo(args,locils)
-    make_tables(args)
+    make_tables(args, settings)
     make_isolateandmgt(args,schemes,settings.SUPERUSER)
 
 if __name__ == "__main__":

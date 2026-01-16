@@ -2513,9 +2513,9 @@ def main():
         """ 2 - get matches of allele profile to existing allele profiles - exact for st inexact for cc/odc######## """
         ## TODO get num diffs from DB
 
-        odclevels = [ int(x.replace("MGT","")) for x in settings.AP_DWN_LVLS_DISPLAY_NAME[args.appname] ]
 
-        if level in odclevels:
+
+        if level == maxlevel:
             odclev = True
             nodiffs = get_odc_diffs(args, level, conn)
             odcdiffs = nodiffs

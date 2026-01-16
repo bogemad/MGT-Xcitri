@@ -341,19 +341,17 @@ def make_tables(args, settings):
     c = 1
     for i in range(minlevel,maxlevel+1):
         if (i in odclevels) and min(odcdists) == 1:
-            outf.write(f"MGT{i}\t1,2\t{i},{c}\tMGT{i},MGT{i}-ODC1\t1\n")
+            outf.write(f"MGT{i}\t1\t{i}\tMGT{i}\t1\n")
             outccInfo.write(f"MGT{i}\tMGT{i}_cc.txt	MGT{i}_cc_merges.txt	1_{i}\n")
-            odc1=True
-            make_cc_inp_files(args,i)
+            make_cc_inp_files(args, i)
             outaptables.write(f"MGT{i}\t{i}\tMGT{i}\n")
             outapmapping.write(f"MGT{i}\tMGT{i}_gene_profiles.txt\n")
-            c+=1
-            for j in [x for x in odcdists if x != 1]:
+            for j in odcdists:
                 outf.write(f"MGT{i}\t2\t{c}\tMGT{i}-ODC{j}\t{j}\n")
                 outccInfo.write(f"MGT{i}\tMGT{i}{j}_cc.txt	MGT{i}{j}_cc_merges.txt	2_{c}\n")
                 c+=1
                 make_cc_inp_files(args, i,odc=j)
-                if j==max([x for x in odcdists if x != 1]):
+                if j==max(odcdists):
                     break
         else:
             outf.write(f"MGT{i}\t1\t{i}\tMGT{i}\t1\n")

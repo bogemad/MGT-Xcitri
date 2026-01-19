@@ -1283,8 +1283,9 @@ def match_existing_st_to_cc(st,level,odclev,odcdiffs,connection,args):
             odcs = hit[2:]
             if cc not in ccls:
                 ccls.append(cc)
-            for odcdiff,pos in odcdiffs.items():
-                odcres = hit[pos]
+            print(hit, odcdiffs)
+            for pos, odcdiff in enumerate(odcdiffs.keys()):
+                odcres = hit[pos+2]
                 if odcres not in odcmatches[odcdiff]:
                     odcmatches[odcdiff].append(odcres)
         # print(odcmatches)
@@ -1585,7 +1586,7 @@ def get_most_frequent_st(args,stlist,level,connection):
 
     return largest[1]
 
-def detect_exact_ap_matches(connection, tablesdict, level, inquery, dbname, odc_level):
+def detect_exact_ap_matches(connection, tablesdict, level, inquery, dbname, odc_level, allowed_diffs):
     """
 
     :param connection: psycopg2 connection object
@@ -1646,9 +1647,10 @@ def detect_exact_ap_matches(connection, tablesdict, level, inquery, dbname, odc_
     if len(exacthitcombined) == 1:
         match = exacthitcombined[0]
         # TODO odc id names in more automated way - Salmonella_tables_cc
+        diffpos = [ pos for dif,pos in allowed_diffs.items() ]
         if odc_level:
-            ccsub = 'SELECT "st","dst","cc1_{}_id","cc2_2_id","cc2_3_id","cc2_4_id" FROM "{}_ap{}_0" WHERE "id" = {} ;'.format(
-                level, dbname, level,
+            ccsub = 'SELECT "st","dst","cc1_{}_id","cc2_{}_id","cc2_{}_id","cc2_{}_id" FROM "{}_ap{}_0" WHERE "id" = {} ;'.format(
+                level, diffpos[0], diffpos[1], diffpos[2], dbname, level,
                 match)
         else:
             ccsub = 'SELECT "st","dst","cc1_{}_id" FROM "{}_ap{}_0" WHERE "id" = {} ;'.format(level, dbname, level,
@@ -1817,7 +1819,7 @@ def get_matches(level, connection, inquery, allowed_diffs, tablesdict, odc_level
         return [], [], {}
 
     dbname = args.appname
-    output, outcome = detect_exact_ap_matches(connection, tablesdict, level, inquery, dbname, odc_level)
+    output, outcome = detect_exact_ap_matches(connection, tablesdict, level, inquery, dbname, odc_level, allowed_diffs)
 
     if args.timing:
         print("{} exact get matches".format(level), (" --- %s seconds ---" % (time.time() - start_time)))
@@ -2311,7 +2313,7 @@ def get_odc_diffs(args,level,conn):
     res = sorted(res,key=lambda x:x[1])
     odcdiffs = OrderedDict()
     for x in res:
-        if x[1] != 1:
+        if x[1] != 1 and int(x[2][3:]) == level:
             odcdiffs[x[1]] = x[3]
     # print(odcdiffs)
     return odcdiffs
@@ -2513,9 +2515,9 @@ def main():
         """ 2 - get matches of allele profile to existing allele profiles - exact for st inexact for cc/odc######## """
         ## TODO get num diffs from DB
 
+        odclevels = [ int(x.replace("MGT","")) for x in settings.AP_DWN_LVLS_DISPLAY_NAME[args.appname] ]
 
-
-        if level == maxlevel:
+        if level in odclevels:
             odclev = True
             nodiffs = get_odc_diffs(args, level, conn)
             odcdiffs = nodiffs
@@ -2524,7 +2526,7 @@ def main():
             nodiffs = {1:1}
 
 
-        # print(nodiffs)
+        print(level, odclevels, nodiffs)
         """
         stres = matching sequence types to allele profile in list of tuples [(stA,dstA),(stB,dstB)...]
 

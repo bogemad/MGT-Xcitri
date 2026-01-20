@@ -491,7 +491,8 @@ def get_allele_seqs(args,conn,NewPosAlleles,NewNegAlleles,posalleleseqs,negallel
 
     files = sqlquery_to_outls(conn, sqlcommand)
     files = {x[0]: "/" + x[1] for x in files}  # {locus name: fasta file path}
-    print("\t\tget_allele_seqs sql query".format(lev), (" --- %s seconds ---" % (time.time() - time1)))
+    if args.timing:
+        print("\t\tget_allele_seqs sql query".format(lev), (" --- %s seconds ---" % (time.time() - time1)))
     time1 = time.time()
     # posallelesseqs = {}
     # negallelesseqs = {}
@@ -513,7 +514,8 @@ def get_allele_seqs(args,conn,NewPosAlleles,NewNegAlleles,posalleleseqs,negallel
                     posalleleseqs[locus][allelenumber] = str(allele.seq)
                 else:
                     negalleleseqs[locus][allelenumber] = str(allele.seq)
-    print("\t\tget_allele_seqs loop".format(lev), (" --- %s seconds ---" % (time.time() - time1)))
+    if args.timing:
+        print("\t\tget_allele_seqs loop".format(lev), (" --- %s seconds ---" % (time.time() - time1)))
 
     return posalleleseqs,negalleleseqs
 
@@ -783,7 +785,8 @@ def get_negmatches_sql(posalleles,negalleles, NewNegAlleles, assignments, loci_l
                         assignments[locus] = allele
                         done.append(locus)
 
-    print("\t\tget_negmatches_sql firstloop", (" --- %s seconds ---" % (time.time() - time2)))
+    if args.timing:
+        print("\t\tget_negmatches_sql firstloop", (" --- %s seconds ---" % (time.time() - time2)))
 
     #  combine novel positive alleles with unmatched negative alleles for further processing
     combined_todo = dict(NewNegAlleles)
@@ -902,7 +905,8 @@ def get_negmatches_sql(posalleles,negalleles, NewNegAlleles, assignments, loci_l
     #                                 ## if there is only one possible positive match and the matches are negative
     #                                 allele = neg_to_pos(newnegs[0][1])
     #                                 outcomes[locus] = ("new pos allele", allele, newseq, muts)
-    print("\t\tget_negmatches_sql secondloop", (" --- %s seconds ---" % (time.time() - time2)))
+    if args.timing:
+        print("\t\tget_negmatches_sql secondloop", (" --- %s seconds ---" % (time.time() - time2)))
     return outcomes
 
 
@@ -918,7 +922,8 @@ def sort_outcomes_and_assign(outcome, allele_assignments, connection, args):
     time1 = time.time()
     # get next allele number and next dst for each allele for loci in outcome
     next_pos_dict, next_neg_dict = get_max_loci_dict(outcome, connection, args)
-    print("\t\tsort_outcomes_and_assign get max", (" --- %s seconds ---" % (time.time() - time1)))
+    if args.timing:
+        print("\t\tsort_outcomes_and_assign get max", (" --- %s seconds ---" % (time.time() - time1)))
     time1 = time.time()
     new_allele_outdict = {}
     for locus in outcome:
@@ -934,7 +939,8 @@ def sort_outcomes_and_assign(outcome, allele_assignments, connection, args):
 
             #  output new allele info
             new_allele_outdict[locus] = [(locus, str(newno), outcome[locus][2], outcome[locus][3])]
-    print("\t\tsort_outcomes_and_assign secondloop", (" --- %s seconds ---" % (time.time() - time1)))
+    if args.timing:
+        print("\t\tsort_outcomes_and_assign secondloop", (" --- %s seconds ---" % (time.time() - time1)))
     time1 = time.time()
     return allele_assignments, new_allele_outdict
 
@@ -1067,13 +1073,15 @@ def get_max_loci_dict(outcome, connection, args):
     for i in outcome:
         if outcome[i][1] != "0":
             get_max_for_loci.append(i)
-    print("\t\tget_max_loci_dict parse outcome", (" --- %s seconds ---" % (time.time() - time1)))
+    if args.timing:
+        print("\t\tget_max_loci_dict parse outcome", (" --- %s seconds ---" % (time.time() - time1)))
     time1 = time.time()
     #  Get allele numbers for all loci in  get_max_for_loci
     locuslisstr = "('" + "','".join(get_max_for_loci) + "')"
     sqlquery = """Select * FROM "{}_allele" WHERE "locus_id" IN {};""".format(args.appname, locuslisstr)
     tablels = sqlquery_to_outls(connection, sqlquery)
-    print("\t\tget_max_loci_dict run sql query", (" --- %s seconds ---" % (time.time() - time1)))
+    if args.timing:
+        print("\t\tget_max_loci_dict run sql query", (" --- %s seconds ---" % (time.time() - time1)))
     time1 = time.time()
     #  process sql out and store allele numbers as a list for each locus
     loci_allele_dict = {}
@@ -1083,7 +1091,8 @@ def get_max_loci_dict(outcome, connection, args):
             loci_allele_dict[loc] = [line[1]]
         else:
             loci_allele_dict[loc].append(line[1])
-    print("\t\tget_max_loci_dict first loop", (" --- %s seconds ---" % (time.time() - time1)))
+    if args.timing:
+        print("\t\tget_max_loci_dict first loop", (" --- %s seconds ---" % (time.time() - time1)))
     time1 = time.time()
     next_pos_dict = {}
     next_neg_dict = {}
@@ -1115,7 +1124,8 @@ def get_max_loci_dict(outcome, connection, args):
         # if posnext == 1:
         #     input("posnext Press Enter to continue...{}".format(locus))
         next_pos_dict[locus] = str(posnext)
-    print("\t\tget_max_loci_dict second loop", (" --- %s seconds ---" % (time.time() - time1)))
+    if args.timing:
+        print("\t\tget_max_loci_dict second loop", (" --- %s seconds ---" % (time.time() - time1)))
     return next_pos_dict, next_neg_dict
 
 
@@ -1283,7 +1293,6 @@ def match_existing_st_to_cc(st,level,odclev,odcdiffs,connection,args):
             odcs = hit[2:]
             if cc not in ccls:
                 ccls.append(cc)
-            print(hit, odcdiffs)
             for pos, odcdiff in enumerate(odcdiffs.keys()):
                 odcres = hit[pos+2]
                 if odcres not in odcmatches[odcdiff]:
@@ -2002,7 +2011,6 @@ def get_matches(level, connection, inquery, allowed_diffs, tablesdict, odc_level
     odcresdict = {x: [] for x in allowed_diffs}
     #TODO make dict that has {cctableno:diffno}
     if odc_level:
-        print(allowed_diffs)
         for dif,pos in allowed_diffs.items():
             odcmatchlis = odcmatches[dif]
             if odcmatchlis == []:
@@ -2395,14 +2403,14 @@ def main():
     AllCalls, PosMatches, NewPosAlleles, NewNegAlleles, ZeroCallAlleles, MGT1Call, species_sero, dash_to_nodash, nodash_to_dash = split_in_alleles(
         InputAllelesFile)
 
-    print(MGT1Call)
-    print(species_sero)
+    # print(MGT1Call)
+    # print(species_sero)
 
     start_time = time.time()
 
 
 
-    print(str(InputAllelesFile).split("/")[-1].replace("_alleles.fasta", ""))
+    # print(str(InputAllelesFile).split("/")[-1].replace("_alleles.fasta", ""))
     args.strainname = str(StrainName)
     #TODO make this more simple
     # if species_sero not in serotype_d:
@@ -2438,14 +2446,14 @@ def main():
     maxlevel = get_max_scheme(conn, args)
     minlevel = get_min_scheme(conn, args)
 
-    print("maxlevel = " + str(maxlevel))
-    print("minlevel = " + str(minlevel))
+    # print("maxlevel = " + str(maxlevel))
+    # print("minlevel = " + str(minlevel))
 
     ###if MGT1Call != '4':
     ###    maxlevel -= 1
 
-    print("maxlevel = " + str(maxlevel))
-    print("minlevel = " + str(minlevel))
+    # print("maxlevel = " + str(maxlevel))
+    # print("minlevel = " + str(minlevel))
 
     odcdiffs = OrderedDict()
     posalleleseqs = {}
@@ -2526,7 +2534,7 @@ def main():
             nodiffs = {1:1}
 
 
-        print(level, odclevels, nodiffs)
+        # print(level, odclevels, nodiffs)
         """
         stres = matching sequence types to allele profile in list of tuples [(stA,dstA),(stB,dstB)...]
 

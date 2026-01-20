@@ -1175,7 +1175,7 @@ def runAllele2Db(args,conn,alleleslocation):
             if not os.path.exists(fullpath):
                 print(f"Strain id {ident} allele file not present at {fullpath}")
             else:
-                command += """python {scriptpath} {allelesfile} {appname} -s {settings} --apzerolim {apzero} -p -c -t none --threads {threads} --project {mgtproj} --local --timing --id {ident}{nested}{query}\n""".format(allelesfile=fullpath,
+                command += """python {scriptpath} {allelesfile} {appname} -s {settings} --apzerolim {apzero} -c -t none --threads {threads} --project {mgtproj} --local --id {ident}{nested}{query}\n""".format(allelesfile=fullpath,
                                                                                                                                                         scriptpath=al2dbpath,
                                                                                                                                                         appname=args.appname,
                                                                                                                                                         tmp=args.tmpfolder,

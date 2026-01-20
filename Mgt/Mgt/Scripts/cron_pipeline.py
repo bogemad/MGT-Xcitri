@@ -1102,9 +1102,8 @@ def runAllele2Db(args,conn,alleleslocation):
     # uploadlocation = get_abs_from_rel_and_abs(hard_media_root, args.projectPath) + "/"
     #use L assignment status to get strains, allele file @ file_alleles
     # USE -c to skip isolate/metadata add and use -t "none" so no meta file is looked for
-    reads_query = """ SELECT "id","file_alleles","project_id","isQuery" FROM "{}_isolate" WHERE "server_status" in ('V'); """.format(args.appname) # NOTE add return of query flag here
+    reads_query = """ SELECT "id","file_alleles","project_id","isQuery" FROM "{}_isolate" WHERE "server_status" in ('V') ORDER BY "id" ASC; """.format(args.appname) # NOTE add return of query flag here
     res = sqlquery_to_outls(conn,reads_query)
-
     # print(res)
 
     submission_subset_res = list([x for x in res if not x[3]])
@@ -1124,11 +1123,11 @@ def runAllele2Db(args,conn,alleleslocation):
     ids = list([str(x[0]) for x in res])
     all2id = {x[1]:str(x[0]) for x in res}
 
-    if len(ids) > 100:
-        if not args.local:
-            ids = ids[:100]
-        else:
-            ids = ids[:500]
+    #if len(ids) > 100:
+    #   if not args.local:
+    #       ids = ids[:100]
+    #   else:
+    #       ids = ids[:500]
 
     alleles = list([x[1] for x in res if str(x[0]) in ids])
 
@@ -1169,13 +1168,14 @@ def runAllele2Db(args,conn,alleleslocation):
         # command += "source ~/.bashrc\n"
         # command += "source ~/.zshrc\n"
         command += "conda activate {conda_env}\n".format(conda_env = args.condaenv)
+        runscript = open(path.join(args.tmpfolder, 'cron_run.sh'), 'w')
         for f in alleles:
             ident = all2id[f]
             fullpath = uploadlocation + f
             if not os.path.exists(fullpath):
                 print(f"Strain id {ident} allele file not present at {fullpath}")
             else:
-                command += """python {scriptpath} {allelesfile} {appname} -s {settings} --apzerolim {apzero} -c -t none --threads {threads} --project {mgtproj} --local --id {ident}{nested}{query}\n""".format(allelesfile=fullpath,
+                runscript.write("""python {scriptpath} {allelesfile} {appname} -s {settings} --apzerolim {apzero} -c -t none --threads {threads} --project {mgtproj} --local --id {ident}{nested}{query}\n""".format(allelesfile=fullpath,
                                                                                                                                                         scriptpath=al2dbpath,
                                                                                                                                                         appname=args.appname,
                                                                                                                                                         tmp=args.tmpfolder,
@@ -1185,8 +1185,11 @@ def runAllele2Db(args,conn,alleleslocation):
                                                                                                                                                         ident=ident,
                                                                                                                                                         nested=nestedcall,
                                                                                                                                                         query=q,
-                                                                                                                                                        threads=args.threads)
-        command += '"'
+                                                                                                                                                        threads=args.threads))
+        runscript.close()
+        command += '/bin/bash cron_run.sh\n"'
+        
+
         subprocess.run(command, shell=True)
         # with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as sp:
         #     for line in sp.stdout:

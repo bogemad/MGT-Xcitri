@@ -20,7 +20,7 @@
 20	olitorii*
 21	eucalyptorum*
 22	vitiswoodrowii*
-23	X._cissicola_LMG_21719*
+23	cissicola*
 24	bilvae*
 25	lablab_clade_2*
 26	khayae*

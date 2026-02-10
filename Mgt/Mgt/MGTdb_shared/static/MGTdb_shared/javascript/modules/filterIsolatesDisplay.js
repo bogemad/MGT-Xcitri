@@ -306,20 +306,28 @@ function printSelectApStr(apInfo, groupStr, typeDispStr, tnUrl){
 function printSelectStr_cc(selectObj, apInfo, tnSearchSelect, groupList, typeDispStr){
 
 	// console.log("inside the function " + tnSearchSelect);
+	console.log("apInfo is ", apInfo);
 
-	var optgroup = document.createElement("optgroup");
-	optgroup.label = groupList[apInfo[0].display_table-1];
-	selectObj.add(optgroup);
+	let group_lists = []; 
 
-
+	for (var i=0; i<groupList.length; i++){
+		var optgroup = document.createElement("optgroup");
+		optgroup.label = groupList[i];
+	
+		group_lists.push(optgroup);
+		selectObj.add(optgroup);
+	}
+	
 
 	for  (var i = 0; i < apInfo.length; i++){
+		/* 
 		if (i > 0 && apInfo[i-1].display_table != apInfo[i].display_table){
 
 			optgroup = document.createElement("optgroup");
 			optgroup.label = groupList[apInfo[i].display_table-1];
 			selectObj.add(optgroup);
 		}
+		*/
 
 		var option = document.createElement("option");
 		option.text = apInfo[i].display_name;  //+ " - " + typeDispStr;
@@ -333,13 +341,17 @@ function printSelectStr_cc(selectObj, apInfo, tnSearchSelect, groupList, typeDis
 
 
 		if (apInfo[i].hasOwnProperty('display_table') && apInfo[i].display_table == 1) {
-
+			
 			option.text = option.text + " - " + typeDispStr;
-
+			group_lists[0].appendChild(option);
+		}
+		else if (apInfo[i].hasOwnProperty('display_table') && apInfo[i].display_table == 2 || apInfo[i].hasOwnProperty('display_table') && apInfo[i].display_table == 3) {
+			option.text = option.text + " - " + typeDispStr;
+			group_lists[1].appendChild(option);
 		}
 
 
-		optgroup.appendChild(option);
+		// optgroup.appendChild(option);
 	}
 
 }

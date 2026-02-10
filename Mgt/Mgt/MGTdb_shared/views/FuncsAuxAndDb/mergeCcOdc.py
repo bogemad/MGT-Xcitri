@@ -2,12 +2,16 @@ from . import getPoolOfCcMergeIds, rawQueries
 from time import sleep as sl
 from collections import OrderedDict
 import time
-
+import importlib
 
 def get_merge_dict(list_colsInfo, org):
     merge_dicts = {}
     colnames = OrderedDict()
 
+    Tables_cc = getModels(org)
+
+    db_cc_tableNames = list(Tables_cc.objects.values_list('table_name',  flat=True).distinct())
+    # print ('The allowed values are', db_cc_tableNames, flush=True)
     for coldict in list_colsInfo:
 
         colname = coldict['table_name']
@@ -15,7 +19,7 @@ def get_merge_dict(list_colsInfo, org):
 
         colnames[colname] = colno
         # for each cc get all cc and ccmerge columns
-        if colname.startswith("cc") and "merge" not in colname and colname not in  ["cc2_1", "cc2_5"]:
+        if colname.startswith("cc") and "merge" not in colname and colname in db_cc_tableNames:
 
             querystring = f"""SELECT "identifier","merge_id_id" FROM "{org}_{colname}"; """
 
@@ -103,3 +107,8 @@ def get_merges(list_colsInfo, isolates, org):
     print("{} isolates changed. cc,odc merging in: {}".format(c,elapsed_time))
     return nisolates
 
+def getModels(org):
+    models = importlib.import_module(f'{org}.models')
+    Tables_cc = models.Tables_cc
+    
+    return Tables_cc

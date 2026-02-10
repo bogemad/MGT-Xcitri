@@ -338,22 +338,23 @@ def make_tables(args, settings):
     odc1 = False
     if args.mgt1is7gene:
         minlevel=2
-    c = 1
+    c = 1; odcTableNumStart = 2;
     for i in range(minlevel,maxlevel+1):
         if (i in odclevels) and min(odcdists) == 1:
-            outf.write(f"MGT{i}\t1,2\t{i},{c}\tMGT{i},MGT{i}-ODC1\t1\n")
-            outccInfo.write(f"MGT{i}\tMGT{i}_cc.txt	MGT{i}_cc_merges.txt	1_{i}\n")
+            outf.write(f"MGT{i}\t1,{odcTableNumStart}\t{i},{c}\tMGT{i},MGT{i}-ODC1\t1\n")
+            outccInfo.write(f"MGT{i}\tMGT{i}_cc.txt	MGT{i}_cc_merges.txt\t1_{i}\n")
             odc1=True
             make_cc_inp_files(args,i)
             outaptables.write(f"MGT{i}\t{i}\tMGT{i}\n")
             outapmapping.write(f"MGT{i}\tMGT{i}_gene_profiles.txt\n")
             c+=1
             for j in [x for x in odcdists if x != 1]:
-                outf.write(f"MGT{i}\t2\t{c}\tMGT{i}-ODC{j}\t{j}\n")
-                outccInfo.write(f"MGT{i}\tMGT{i}{j}_cc.txt	MGT{i}{j}_cc_merges.txt	2_{c}\n")
+                outf.write(f"MGT{i}\t{odcTableNumStart}\t{c}\tMGT{i}-ODC{j}\t{j}\n")
+                outccInfo.write(f"MGT{i}\tMGT{i}{j}_cc.txt	MGT{i}{j}_cc_merges.txt	{odcTableNumStart}_{c}\n")
                 c+=1
                 make_cc_inp_files(args, i,odc=j)
                 if j==max([x for x in odcdists if x != 1]):
+                    odcTableNumStart+=1
                     break
         else:
             outf.write(f"MGT{i}\t1\t{i}\tMGT{i}\t1\n")

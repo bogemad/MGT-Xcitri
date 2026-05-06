@@ -138,7 +138,7 @@ def page(request, org):
 
 	# print(list_colsInfo)
 	# print(isolates);
-
+	print ('here we are.....') 
 	if isMgt9Ap:
 
 		if ap_to_download_mgtTn == None: 
@@ -159,11 +159,14 @@ def page(request, org):
 		# print(dict_)
 		# return JsonResponse(dict_, safe=False)
 		# print(outstring)
+
+		print ('The outstring is: ', outstring)
+
 		return HttpResponse(outstring)
 
 	isAp = True; isDst = False; isMgtColor = True;
 	if 'isAp' in request.POST and request.POST['isAp'] == "false":
-		print ('DOES IT GET TO THIS POINT?')
+		# print ('DOES IT GET TO THIS POINT?')
 		
 		isAp = False
 	if 'isDst' in request.POST and request.POST['isDst'] == 'true':
@@ -184,7 +187,7 @@ def page(request, org):
 	elif isCsv:
 		# theCsvBuf = makeCsvString.convertToCsv(list_colsInfo, isolates)
 		# return theCsvBuf
-		print ('DOES IT GET TO THIS POINT?')
+		# print ('DOES IT GET TO THIS POINT?')
 		
 		outstring = makeCsv(isolates, request.user.is_authenticated, list_colsInfo, org)
 		return HttpResponse(outstring)

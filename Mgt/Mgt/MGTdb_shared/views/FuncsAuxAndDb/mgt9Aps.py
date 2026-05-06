@@ -13,7 +13,8 @@ from django.http import HttpResponse
 def convertToCsv_ap9(isolates, mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombined, isGrapeTree, org):
 	Tables, Mgt = getModels(org)
 	buffer = io.StringIO()
-	wr = csv.writer(buffer, quoting=csv.QUOTE_NONE, delimiter='|', quotechar='')
+
+	wr = csv.writer(buffer, quoting=csv.QUOTE_NONE, delimiter='|', quotechar='\'')
 
 	if len(mgtId_ap9Id) > 0:
 
@@ -42,7 +43,7 @@ def convertToCsv_ap9(isolates, mgtId_ap9Id, dict_tabRows_byAp9Id, colNamesCombin
 		wr.writerow(["Isolate,"])
 
 		if (len(isolates) > 0):
-			print(isolates);
+			# print(isolates);
 			for (isoId, isolate, mgtId) in isolates:
 				wr.writerow([isolate + '\tNo_allelic_profile_available'])
 

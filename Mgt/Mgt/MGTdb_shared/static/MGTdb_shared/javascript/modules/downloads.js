@@ -3,17 +3,35 @@ export {doTheDownload, downloadCsvSuccess, downloadMgt9Aps, downloadMgt9ApsSucce
 import {getOtherPage} from './packageAndSend.js';
 
 function downloadMgt9ApsSuccess(response){
-	// console.log(response);
+	
 
 	var blob=new Blob([response]);
 	var link=document.createElement('a');
 	link.href=window.URL.createObjectURL(blob);
-	var fn_ap = document.getElementById('btnMgt9Download').innerHTML;
+
+	let theSpecificBtnId = null; 
+	let btns = document.getElementsByClassName('btnMgt9Download')
+	for (let i=0; i<btns.length; i++){
+		if (btns[i].disabled == true){
+			theSpecificBtnId = btns[i].id;
+			// theSpecificBtnId.disabled = false; 
+			break;
+		}
+	}
+	console.log(theSpecificBtnId); 
+	
+
+	if (theSpecificBtnId == null){
+		console.log('Error: could not find the button to enable after download!');
+		return ;
+	}
+
+	var fn_ap = document.getElementById(theSpecificBtnId).innerHTML;
 	fn_ap = fn_ap.trim();
 	fn_ap = fn_ap.replace('Download ', '');
 	fn_ap = fn_ap.replace(' allelic profiles', '');
 	fn_ap = fn_ap.replace(/[\s]+/g, '_');
-	// console.log('Downloaded file name is ' + fn_ap);
+	console.log('Downloaded file name is ' + fn_ap);
 
 	link.download = fn_ap + "_allelic_profiles.tsv";
 	link.click();
@@ -22,13 +40,13 @@ function downloadMgt9ApsSuccess(response){
 
 
 	// 3. Enable the button again & hide searching div.
-	document.getElementById("btnMgt9Download").disabled = false;
+	document.getElementById(theSpecificBtnId).disabled = false;
 	document.getElementById("fetchingcsv").style.display='none';
 
 	if (document.getElementById('pageNumLoading')){
 		document.getElementById('pageNumLoading').style.display = 'none';
 	}
-
+	
 }
 
 
@@ -58,7 +76,8 @@ function doTheDownload(searchVar){
 }
 
 function downloadMgt9Aps(searchVar, btn, toDownloadDn, list_tabAps){
-	document.getElementById("btnMgt9Download").disabled = true;
+	
+	document.getElementById(btn).disabled = true;
 	document.getElementById('ap9download_tn_error').textContent = ''; 
 
 
@@ -75,7 +94,7 @@ function downloadMgt9Aps(searchVar, btn, toDownloadDn, list_tabAps){
 	}
 
 	if (table_name == ''){
-		document.getElementById("btnMgt9Download").disabled = false; 
+		document.getElementById(btn).disabled = false; 
 		document.getElementById('ap9download_tn_error').textContent = 'Error: No such MGT level as ' +  toDownloadDn + '! Sorry cannot download allelic profiles at the moment.';  
 		return;
 	} 

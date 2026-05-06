@@ -376,7 +376,7 @@
 					<div class="col-sm">
 						{% if apDownloadLvls|length > 0 %}
 							{% for apDwnldLvl in apDownloadLvls %}
-								<button id="btnMgt9Download" title="For phylogeny generation with other tools" type=button class="btn btn-primary" onclick="javascript:downloadMgt9Aps({{ request.session.sessionVar }}, btnMgt9Download, '{{ apDwnldLvl }}', {{ tabAps }});"> Download {{ apDwnldLvl }} allelic profiles </button><button type="button" class="btn" data-toggle="modal" data-target="#exampleModal" data-whatever="@downloadAsAps" onclick="theHelpFns(this);"><span class='fas fa-info-circle'> </span></button> <br>
+								<button id="btnMgt9Download_{{ apDwnldLvl }}" title="For phylogeny generation with other tools" type=button class="btnMgt9Download btn btn-primary" onclick="javascript:downloadMgt9Aps({{ request.session.sessionVar }}, 'btnMgt9Download_{{ apDwnldLvl }}', '{{ apDwnldLvl }}', {{ tabAps }});"> Download {{ apDwnldLvl }} allelic profiles </button><button type="button" class="btn" data-toggle="modal" data-target="#exampleModal" data-whatever="@downloadAsAps" onclick="theHelpFns(this);"><span class='fas fa-info-circle'> </span></button> <br>
 
 								
 							{% endfor %}

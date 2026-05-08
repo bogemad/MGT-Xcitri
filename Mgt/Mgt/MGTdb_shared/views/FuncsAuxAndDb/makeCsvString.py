@@ -27,6 +27,8 @@ def makeCsv(isolates, isAuth, list_colsInfo, org):
 	:param isolates:
 	:return:
 	"""
+
+	print (isolates)
 	Isolate, View_apcc, Tables_ap, Tables_cc = getModels(org)
 
 	(header, colNums, list_apTns, list_ccTns, dict_apCols, dict_ccCols, colNums_md, col_serverStatus, col_assignStatus) = extractTheHeader(list_colsInfo, org)
@@ -176,19 +178,21 @@ def extractTheHeader(list_colsInfo, org):
 		list_apTns.append(i['table_name'])
 
 	# add MGT_CC for CC headers
-	qs_tablesCc = Tables_cc.objects.filter(display_table=1).values('table_name', 'display_name').order_by(
-	    'display_order')
-	for i in qs_tablesCc:
-		header.append(i['display_name'])
-		list_ccTns.append(i['table_name'])
-
+	for display_table_idx in Tables_cc.objects.all().order_by('display_table').values_list('display_table', flat=True).distinct():
+		# if display_table_idx == 1: # CCs
+			qs_tablesCcOdc = Tables_cc.objects.filter(display_table=display_table_idx).values('table_name', 'display_name').order_by('display_order')
+			for i in qs_tablesCcOdc:
+				header.append(i['display_name'])
+				list_ccTns.append(i['table_name'])
+			
+	"""
 	#add ODC names as headers
 	qs_tablesEpi = Tables_cc.objects.filter(display_table=2).values('table_name', 'display_name').order_by(
 	    'display_order')
 	for i in qs_tablesEpi:
 		header.append(i['display_name'])
 		list_ccTns.append(i['table_name'])
-
+	"""
 
 	header = header + header_md
 
@@ -201,7 +205,7 @@ def extractTheHeader(list_colsInfo, org):
 	print(dict_ccCols)
 
 	print (list_apTns)
-	print (list_ccTns)
+	print ("List CC tns:", list_ccTns)
 
 	print (colNums_md)
 

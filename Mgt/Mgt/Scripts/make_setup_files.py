@@ -341,7 +341,7 @@ def make_tables(args, settings):
     c = 1; odcTableNumStart = 2;
     for i in range(minlevel,maxlevel+1):
         if (i in odclevels) and min(odcdists) == 1:
-            outf.write(f"MGT{i}\t1,{odcTableNumStart}\t{i},{c}\tMGT{i},MGT{i}-ODC1\t1\n")
+            outf.write(f"MGT{i}\t1,{odcTableNumStart}\t{i},{c}\tMGT{i}-CC,MGT{i}-ODC1\t1\n")
             outccInfo.write(f"MGT{i}\tMGT{i}_cc.txt	MGT{i}_cc_merges.txt\t1_{i}\n")
             odc1=True
             make_cc_inp_files(args,i)
@@ -357,7 +357,7 @@ def make_tables(args, settings):
                     odcTableNumStart+=1
                     break
         else:
-            outf.write(f"MGT{i}\t1\t{i}\tMGT{i}\t1\n")
+            outf.write(f"MGT{i}\t1\t{i}\tMGT{i}-CC\t1\n")
             outccInfo.write(f"MGT{i}\tMGT{i}_cc.txt	MGT{i}_cc_merges.txt	1_{i}\n")
             make_cc_inp_files(args, i)
             outaptables.write(f"MGT{i}\t{i}\tMGT{i}\n")

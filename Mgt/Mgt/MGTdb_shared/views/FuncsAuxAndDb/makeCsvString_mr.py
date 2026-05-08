@@ -68,6 +68,7 @@ def makeCsv_microreact(isolates, isAuth, list_colsInfo, geolocator, org):
 
 	(header, colNums, list_apTns, list_ccTns, dict_apCols, dict_ccCols, colNums_md, col_serverStatus, col_assignStatus, col_country) = extractTheHeader(list_colsInfo, org)
 
+	print ('List ccTns is: ', list_ccTns) 
 	dict_colors = [] # dict_[stVal] => hexColor
 
 	outStr = ",".join(header) + "\n"
@@ -252,6 +253,9 @@ def convertToCsv(list_colsInfo, isolates):
 
 
 def extractTheHeader (list_colsInfo, org):
+	## print ('The list_colsInfo is: ', list_colsInfo)
+
+
 	Isolate, View_apcc, Tables_ap, Tables_cc = getModels(org)
 
 	header = []; header_md = [];
@@ -314,7 +318,7 @@ def extractTheHeader (list_colsInfo, org):
 		elif re.match('^cc[0-9]+_[0-9]+_merge$', colObj['table_name']):
 			print (colObj['table_name'])
 
-			tn = re.sub('_merge$', '', colObj['table_name'])
+			tn = re.sub('_merge$', '', colObj['table_name']) 
 
 
 			if (tn not in dict_ccCols):
@@ -341,14 +345,15 @@ def extractTheHeader (list_colsInfo, org):
 				if re.search('country', colObj['table_name'], flags=re.I):
 					col_country = colObj['db_col']
 
-				print (colObj);
+				## print (colObj);
 				colNums_md.append(colObj['db_col'])
 		else:
 			# print(colObj)
 			pass
 		# if re.match('^ap.*_st'colObj['table_name']
 
-
+	##  print ('The dict_ccCols is: ', dict_ccCols) 
+	
 	# add MGT levels for ST headers
 	qs_tablesAp = Tables_ap.objects.filter(table_num=0).order_by('display_order').values('table_name', 'scheme__display_name')
 	for i in qs_tablesAp:
@@ -358,18 +363,21 @@ def extractTheHeader (list_colsInfo, org):
 		list_apColors.append(i['scheme__display_name'] + "__color")
 
 	# add MGT_CC for CC headers
-	qs_tablesCc = Tables_cc.objects.filter(display_table=1).values('table_name', 'display_name').order_by(
-	    'display_order')
-	for i in qs_tablesCc:
-		header.append(i['display_name'])
-		list_ccTns.append(i['table_name'])
+	for display_table_idx in Tables_cc.objects.all().order_by('display_table').values_list('display_table', flat=True).distinct():
+		qs_tablesCcOdc = Tables_cc.objects.filter(display_table=display_table_idx).values('table_name', 'display_name').order_by(
+		    'display_order')
+		for i in qs_tablesCcOdc:
+			header.append(i['display_name'])
+			list_ccTns.append(i['table_name'])
 
+	"""
 	#add ODC names as headers
 	qs_tablesEpi = Tables_cc.objects.filter(display_table=2).values('table_name', 'display_name').order_by(
 	    'display_order')
 	for i in qs_tablesEpi:
 		header.append(i['display_name'])
 		list_ccTns.append(i['table_name'])
+	""" 
 
 	list_apColors.reverse()
 

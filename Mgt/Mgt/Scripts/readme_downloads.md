@@ -5,7 +5,7 @@ python3 createDump_PuAllelicProf.py --mgtBasePath ../ --settingFn Mgt.settings_l
 
 2. Creating dump of alleles (all)
 ```sh
-python3 createDump_alleles.py --mgtBasePath ../ --settingFn Mgt.settings_sklocal > outfile
+python3 createDump_alleles.py --mgtBasePath ../ --settingFn Mgt.settings_local_sk > outfile
 ```
 
 3. Creating allelic profiles of each project

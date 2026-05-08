@@ -17,8 +17,6 @@ def createTheDump(mgtPath, settingModuleName, queryNumLimit):
     #print('Django project name ' + settingModuleName)
     #print('Query limit ' + str(queryNumLimit))
 
-
-
     # Load the settings file
     sys.path.append(mgtPath)
     os.environ['DJANGO_SETTINGS_MODULE'] = settingModuleName
@@ -90,10 +88,10 @@ def getAndPrint(appClass, queryNumLimit, tns_mgt9, dir_filesForDownload, appName
         numPubIso = appClass.models.Isolate.objects.filter(project_id=projObj.id, assignment_status='A').count()
 
 
-
+        print ('Num isolates found in project are:', numPubIso)
         if numPubIso > 0:
 
-
+            
             filename = appName + "_aps_" + str(projObj.id) + "_" + aScheme + '_' + str(date.today()) + ".txt"
             # re.sub('\_aps\_', '_aps_' + str(projObj.id) + '_', filename_orig)
             toDelPattern = appName + "_aps_" + str(projObj.id) + "_" + aScheme
@@ -158,8 +156,10 @@ def getAndPrint(appClass, queryNumLimit, tns_mgt9, dir_filesForDownload, appName
                 iso_ap9Ids = appClass.models.Isolate.objects.filter(project_id=projObj.id, assignment_status='A', **{'mgt__' + zeroTn+"__isnull": False}).order_by('id').values_list('identifier', 'mgt__' + zeroTn)[startCnt:endCount]
 
                 # Do the printing
+                
 
                 for (iso, ap9Id) in iso_ap9Ids:
+                
                     fh.write(iso) # + "\t" + str(ap9Id))
 
                     for tnObj in tns_mgt9:
@@ -173,7 +173,9 @@ def getAndPrint(appClass, queryNumLimit, tns_mgt9, dir_filesForDownload, appName
 
                 startCnt = startCnt + queryNumLimit
                 endCount = endCount + queryNumLimit
-                
+            
+            fh.close() 
+
             mvFileToRightDirAndDelOld(filename, dir_filesForDownload, toDelPattern)
 
     return filename
